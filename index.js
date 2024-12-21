@@ -70,8 +70,13 @@ app.use((err, req, res, next) => {
 });
 app.use(errorHandler);
 
-// Serve static files from the frontend directory
+// Serve the static files from the dist directory
 app.use(express.static(path.join(__dirname, 'frontend')));
+
+// Serve the index.html file for all requests (for Angular routing)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/index.html'));
+});
 
 // Create HTTP server
 const http = require("http");
