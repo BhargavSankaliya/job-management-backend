@@ -209,12 +209,93 @@ taskController.taskById = async (req, res, next) => {
   try {
     const { id } = req.params; // Get the user ID from the URL parameters
 
-    const taskCategory = await TaskModel.findById(id);
-    if (!taskCategory) {
+    let query = [
+      {
+        $match: {
+          _id: convertIdToObjectId(id)
+        }
+      },
+      {
+        $lookup: {
+          from: "taskcategories",
+          localField: "category.categoryId",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      {
+        $addFields: {
+          category: {
+            $map: {
+              input: "$category",
+              as: "cat",
+              in: {
+                $mergeObjects: [
+                  "$$cat",
+                  {
+                    name: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.name"
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    type: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.type"
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+    ]
+
+    const taskCategory = await TaskModel.aggregate(query);
+    if (!taskCategory[0]) {
       throw new CustomError("Task Category not found!", 404);
     }
 
-    createResponse(taskCategory, 200, "Task Category retrieved successfully.", res);
+    createResponse(taskCategory[0], 200, "Task Category retrieved successfully.", res);
   } catch (error) {
     errorHandler(error, req, res);
   }
