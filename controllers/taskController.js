@@ -6,6 +6,7 @@ const { convertIdToObjectId, commonFilter } = require("../middlewares/commonFilt
 const Menu = require("../models/menuModel.js");
 const TaskModel = require("../models/taskModel.js");
 const taskHistoryModel = require("../models/taskHistoryModel.js");
+const UserModel = require("../models/userModel.js");
 const taskController = {};
 
 taskController.createUpdateTask = async (req, res, next) => {
@@ -51,11 +52,16 @@ taskController.updateTaskStatus = async (req, res, next) => {
 
     if (findTask.taskStatus == 'ToDo' && (taskStatus == 'Progress' || taskStatus == 'Completed')) {
       findTask.taskStatus = taskStatus;
-      await taskHistoryForUpdateStatus(findTask)
+      await taskHistoryForUpdateStatus(findTask, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`)
     }
     else if (findTask.taskStatus == 'Progress' && (taskStatus == 'ToDo' || taskStatus == 'Completed')) {
       findTask.taskStatus = taskStatus;
-      await taskHistoryForUpdateStatus(findTask);
+
+      if (req.files && req.files.completedPicture[0]) {
+        findTask.completedPicture = req.files.completedPicture[0].filename
+      }
+
+      await taskHistoryForUpdateStatus(findTask, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`);
     }
 
     findTask.save();
@@ -84,6 +90,10 @@ taskController.assignUser = async (req, res, next) => {
 
     if (findTask.assignUserId.toString() != assignUser) {
       findTask.assignUserId = convertIdToObjectId(assignUser);
+
+      const userDetails = await UserModel.findById(assignUser);
+
+      await taskHistoryForUpdateStatus(findTask, `Task Assign the user to ${userDetails.firstName} ${userDetails.lastName}`);
     }
     else {
       throw new CustomError("You can't assign your self!", 404);
@@ -100,7 +110,94 @@ taskController.assignUser = async (req, res, next) => {
 taskController.listTask = async (req, res, next) => {
   try {
 
-    let taskList = !req.query.status ? await TaskModel.aggregate([{ $project: commonFilter.task }]) : await TaskModel.aggregate([{ $match: { status: req.query.status } }, { $project: commonFilter.task }]);
+    let query = [
+      {
+        $lookup: {
+          from: "taskcategories",
+          localField: "category.categoryId",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      {
+        $addFields: {
+          category: {
+            $map: {
+              input: "$category",
+              as: "cat",
+              in: {
+                $mergeObjects: [
+                  "$$cat",
+                  {
+                    name: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.name"
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    type: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.type"
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: { ...commonFilter.task }
+      }
+    ]
+
+    if (req.query.status) {
+      query.push({
+        $match: {
+          status: req.query.status
+        }
+      })
+    }
+
+    let taskList = await TaskModel.aggregate(query)
 
     createResponse(taskList, 200, "Task list get successfully.", res);
   } catch (error) {
@@ -132,13 +229,14 @@ const createTaskHistory = async (task) => {
     endTime: null,
     totalMinutes: 0,
     assignUserId: task.assignUserId,
+    comment: "Task Created"
   })
 
   return history
 
 }
 
-const taskHistoryForUpdateStatus = async (task) => {
+const taskHistoryForUpdateStatus = async (task, comment) => {
 
   let findOldHistory = await taskHistoryModel.findOne({ taskId: task._id, endTime: null });
 
@@ -153,13 +251,12 @@ const taskHistoryForUpdateStatus = async (task) => {
     taskStatus: task.taskStatus,
     startTime: Date.now(),
     endTime: null,
+    comment: comment,
     totalMinutes: 0,
     assignUserId: task.assignUserId,
   })
 
   return history
-
-
 }
 
 module.exports = { taskController }

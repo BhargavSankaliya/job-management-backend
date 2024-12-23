@@ -29,6 +29,9 @@ const storage = multer.diskStorage({
     if (file.fieldname === "profilePicture") {
       dirPath = "uploads/profilePicture";
     }
+    if (file.fieldname === "completedPicture") {
+      dirPath = "uploads/completedPicture";
+    }
 
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
@@ -46,6 +49,7 @@ const upload = multer({ storage: storage });
 // Define upload fields
 const cpUpload = upload.fields([
   { name: "profilePicture", maxCount: 1 },
+  { name: "completedPicture", maxCount: 1 },
 ]);
 
 // Serve static files
@@ -53,7 +57,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/role", verifyToken, roleRoute);
 app.use("/api/menu", verifyToken, menuRoute);
 app.use("/api/user", cpUpload, userRoute);
-app.use("/api/task", verifyToken, taskRoute);
+app.use("/api/task", cpUpload,  taskRoute);
 app.use("/api/task-category", verifyToken, taskCategoryRoute);
 
 // Error handling

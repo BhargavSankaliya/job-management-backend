@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const commonSchema = require("./CommonModel");
+const JobCounter = require("./jobCounterModel");
 
 
 const categorySchema = new mongoose.Schema({
@@ -24,7 +25,7 @@ const taskSchema = new mongoose.Schema(
             default: ''
         },
         jobNo: {
-            type: Number,
+            type: String,
             required: [false, 'Job No. is requied.'],
             default: ''
         },
@@ -79,6 +80,12 @@ const taskSchema = new mongoose.Schema(
             default: 'ToDo'
         },
 
+        completedPicture: {
+            type: String,
+            required: false,
+            default: ''
+        },
+
         status: {
             type: String,
             enum: ["Active", "Inactive"],
@@ -90,6 +97,30 @@ const taskSchema = new mongoose.Schema(
 );
 
 taskSchema.add(commonSchema);
+
+// Pre-save hook to handle jobNo
+taskSchema.pre("save", async function (next) {
+    const task = this;
+
+    if (!task.jobNo) {
+        const currentMonth = new Date().toISOString().slice(0, 7); // Format: YYYY-MM
+
+        // Find or create the job counter for the current month
+        let jobCounter = await JobCounter.findOne({ month: currentMonth });
+
+        if (!jobCounter) {
+            jobCounter = new JobCounter({ month: currentMonth, counter: 0 });
+        }
+
+        // Increment the counter and format it as 0001, 0002, etc.
+        jobCounter.counter += 1;
+        await jobCounter.save();
+
+        task.jobNo = jobCounter.counter.toString().padStart(4, "0"); // Pad with leading zeros
+    }
+
+    next();
+});
 
 const TaskModel = mongoose.model("Task", taskSchema);
 

@@ -25,7 +25,7 @@ commonFilter.taskCategory = {
     _id: 1,
     name: 1,
     type: 1,
-    status: 1
+    status: 1,
 };
 
 commonFilter.task = {
