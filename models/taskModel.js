@@ -29,6 +29,11 @@ const taskSchema = new mongoose.Schema(
             required: [false, 'Job No. is requied.'],
             default: ''
         },
+        taskPriority: {
+            type: Number,
+            required: [true, 'Task Priority is required.'],
+            default: 10
+        },
         partyName: {
             type: String,
             required: [true, 'Party Name is requied.'],

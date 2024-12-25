@@ -37,6 +37,7 @@ commonFilter.task = {
     size: 1,
     operator: 1,
     transportation: 1,
+    taskPriority: 1,
     Note: 1,
     category: 1,
     taskStatus: 1,
