@@ -15,7 +15,17 @@ router.put("/assign/:taskId/:assignUser", taskController.assignUser);
 
 router.get("", taskController.listTask);
 
+router.get("/mobile", taskController.mobileTaskList);
+
 router.get('/details/:id', taskController.taskById);
+
+router.get('/details-admin/:id', taskController.taskDetailsByIdForAdmin);
+
+router.get('/details-comment/:id', taskController.taskCommentListForAdmin);
+
+router.get('/details-user-time/:id', taskController.taskUserTimeListForAdmin);
+
+router.post('/dashboard-task-count', taskController.taskCountForDashboard);
 
 
 

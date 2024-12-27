@@ -89,11 +89,9 @@ taskController.assignUser = async (req, res, next) => {
     }
 
     if (findTask.assignUserId.toString() != assignUser) {
-      findTask.assignUserId = convertIdToObjectId(assignUser);
-
       const userDetails = await UserModel.findById(assignUser);
-
       await taskHistoryForUpdateStatus(findTask, `Task Assign the user to ${userDetails.firstName} ${userDetails.lastName}`);
+      findTask.assignUserId = convertIdToObjectId(assignUser);
     }
     else {
       throw new CustomError("You can't assign your self!", 404);
@@ -111,6 +109,114 @@ taskController.listTask = async (req, res, next) => {
   try {
 
     let query = [
+      {
+        $lookup: {
+          from: "taskcategories",
+          localField: "category.categoryId",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      {
+        $addFields: {
+          category: {
+            $map: {
+              input: "$category",
+              as: "cat",
+              in: {
+                $mergeObjects: [
+                  "$$cat",
+                  {
+                    name: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.name"
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    type: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.type"
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $project: { ...commonFilter.task }
+      }
+    ]
+
+    if (req.query.status) {
+      query.push({
+        $match: {
+          status: req.query.status
+        }
+      })
+    }
+
+    let taskList = await TaskModel.aggregate(query)
+
+    createResponse(taskList, 200, "Task list get successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.mobileTaskList = async (req, res, next) => {
+  try {
+
+    let query = [
+      {
+        $match: {
+          assignUserId: convertIdToObjectId(req.user._id)
+        }
+      },
+      {
+        $sort: {
+          taskPriority: -1
+        }
+      },
       {
         $lookup: {
           from: "taskcategories",
@@ -296,6 +402,365 @@ taskController.taskById = async (req, res, next) => {
     }
 
     createResponse(taskCategory[0], 200, "Task Category retrieved successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.taskDetailsByIdForAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Get the user ID from the URL parameters
+
+    let query = [
+      {
+        $match: {
+          _id: convertIdToObjectId(id)
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignUserId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "taskcategories",
+          localField: "category.categoryId",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      {
+        $addFields: {
+          category: {
+            $map: {
+              input: "$category",
+              as: "cat",
+              in: {
+                $mergeObjects: [
+                  "$$cat",
+                  {
+                    name: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.name"
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    type: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.type"
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+    ]
+
+    const taskCategory = await TaskModel.aggregate(query);
+    if (!taskCategory[0]) {
+      throw new CustomError("Task Category not found!", 404);
+    }
+
+    createResponse(taskCategory[0], 200, "Task Category retrieved successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.taskCommentListForAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Get the user ID from the URL parameters
+
+    let query = [
+      {
+        $match: {
+          taskId: convertIdToObjectId(id)
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignUserId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+    ]
+
+    const taskHistory = await taskHistoryModel.aggregate(query);
+    if (taskHistory.length == 0) {
+      throw new CustomError("Task History not found!", 404);
+    }
+
+    createResponse(taskHistory, 200, "Task History retrieved successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.taskUserTimeListForAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Get the user ID from the URL parameters
+
+    let query = [
+      {
+        $match: {
+          taskId: convertIdToObjectId(id),
+          taskStatus: "Progress"
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignUserId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $addFields: {
+          userName: {
+            $concat: [
+              "$userDetails.firstName",
+              " ",
+              "$userDetails.lastName"
+            ]
+          }
+        }
+      },
+      {
+        $addFields: {
+          endTime: {
+            $ifNull: ["$endTime", new Date()]
+          }
+        }
+      },
+      {
+        $addFields: {
+          totalMinutes: {
+            $divide: [
+              {
+                $subtract: ["$endTime", "$startTime"]
+              },
+              1000 * 60
+            ]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$assignUserId",
+          totalMinutes: {
+            $sum: "$totalMinutes"
+          },
+          userName: {
+            $first: "$userName"
+          }
+        }
+      },
+      {
+        $addFields: {
+          hours: {
+            $round: {
+              $floor: {
+                $divide: ["$totalMinutes", 60]
+              }
+            }
+          },
+          minutes: {
+            $round: {
+              $mod: ["$totalMinutes", 60]
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          totalTime: {
+            $concat: [
+              {
+                $cond: {
+                  if: {
+                    $gte: ["$hours", 10]
+                  },
+                  then: {
+                    $concat: [
+                      {
+                        $toString: "$hours"
+                      },
+                      " Hours"
+                    ]
+                  },
+                  else: {
+                    $concat: [
+                      "0",
+                      {
+                        $toString: "$hours"
+                      },
+                      " Hours"
+                    ]
+                  }
+                }
+              },
+              " ",
+              {
+                $cond: {
+                  if: {
+                    $gte: ["$minutes", 10]
+                  },
+                  then: {
+                    $concat: [
+                      {
+                        $toString: "$minutes"
+                      },
+                      " Minutes"
+                    ]
+                  },
+                  else: {
+                    $concat: [
+                      "0",
+                      {
+                        $toString: "$minutes"
+                      },
+                      " Minutes"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          userName: 1,
+          totalTime: 1
+        }
+      }
+    ]
+
+    const taskHistory = await taskHistoryModel.aggregate(query);
+    if (taskHistory.length == 0) {
+      return createResponse([], 200, "Task History retrieved successfully.", res);
+    }
+
+    createResponse(taskHistory, 200, "Task History retrieved successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.taskCountForDashboard = async (req, res, next) => {
+  try {
+    const { startDate, endDate, userId } = req.body; // Get the user ID from the URL parameters
+
+    console.log(new Date(startDate));
+    console.log(new Date(endDate));
+
+    let todoQuery = [{ $match: { createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } }, { $match: { taskStatus: "ToDo" } }]
+    let progressQuery = [{ $match: { createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } }, { $match: { taskStatus: "Progress" } }]
+    let completedQuery = [{ $match: { createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } }, { $match: { taskStatus: "Completed" } }]
+    let allQuery = [{ $match: { createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } }]
+    let userIdWiseTaskList = [
+      { $match: { assignUserId: convertIdToObjectId(userId), createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignUserId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $addFields: {
+          userName: {
+            $concat: [
+              "$userDetails.firstName",
+              " ",
+              "$userDetails.lastName"
+            ]
+          }
+        }
+      },
+      {
+        $sort : {
+          taskPriority : -1
+        }
+      }
+    ]
+
+    const [all, todo, progress, completed, taskListByUserId] = await Promise.all([TaskModel.aggregate(allQuery), TaskModel.aggregate(todoQuery), TaskModel.aggregate(progressQuery), TaskModel.aggregate(completedQuery), TaskModel.aggregate(userIdWiseTaskList)])
+
+    createResponse({ all: all.length, todo: todo.length, progress: progress.length, completed: completed.length, taskListByUserId }, 200, "Task Count Retrived Successfully.", res);
   } catch (error) {
     errorHandler(error, req, res);
   }

@@ -57,7 +57,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/role", verifyToken, roleRoute);
 app.use("/api/menu", verifyToken, menuRoute);
 app.use("/api/user", cpUpload, userRoute);
-app.use("/api/task", cpUpload,  taskRoute);
+app.use("/api/task", verifyToken, cpUpload, taskRoute);
 app.use("/api/task-category", verifyToken, taskCategoryRoute);
 
 // Error handling
