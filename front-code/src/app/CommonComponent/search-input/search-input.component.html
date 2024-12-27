@@ -1,0 +1,5 @@
+<div class="searchBox">
+    <img src="../../../assets/images/searchIcon.png" class="img-fluid searchIcon" alt="" *ngIf="!placeHolder">
+    <input class="form-control" [(ngModel)]="search" (input)="searchTerm()" [class]="class" type="text"
+        [placeholder]="placeHolder ? placeHolder  : 'Search...'">
+</div>

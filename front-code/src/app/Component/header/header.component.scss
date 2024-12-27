@@ -1,0 +1,222 @@
+.user-header {
+    background-color: #ffa500;
+    padding: 0 30px;
+    height: 8vh;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+
+
+
+    .navbar-toggler {
+        &:focus {
+            box-shadow: none;
+        }
+    }
+
+    .logo {
+        height: 100%;
+        padding: 5px 0;
+
+        img {
+            height: 100%;
+        }
+    }
+
+    .layout-navbar-fixed body:not(.modal-open) .layout-content-navbar .layout-navbar, .layout-menu-fixed body:not(.modal-open) .layout-content-navbar .layout-navbar, .layout-menu-fixed-offcanvas body:not(.modal-open) .layout-content-navbar .layout-navbar {
+        z-index: 1 !important;
+    }
+
+    .navbar-nav {
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            .profile {
+                position: relative;
+
+                .profile-img {
+                    img {
+                        border-radius: 50%;
+                        width: 50px;
+                        height: 50px;
+                        overflow: hidden;
+                        object-fit: cover;
+                    }
+                }
+
+                .dropdown-content {
+                    overflow: hidden;
+                    position: absolute;
+                    right: 0;
+                    background-color: #fff;
+                    border: 1px solid #E4E4E4;
+                    border-radius: 15px;
+                    padding: 16px;
+                    margin-top: 5px;
+
+                    p {
+                        margin: 0;
+                        font-size: 17px;
+                        font-weight: 500;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+
+                        .icon {
+                            font-size: 21px;
+                            line-height: normal;
+                        }
+                    }
+                }
+            }
+
+
+            .nav-link {
+                background-color: #b82c00;
+                border-radius: 50%;
+                color: #fff;
+                font-size: 13px;
+                font-weight: 600;
+                text-align: center;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-transform: uppercase;
+            }
+
+            .divider {
+                border-right: 1px solid #fff;
+                height: 24px;
+                margin: 0 20px;
+            }
+
+            .dinningOptionDropdown {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+            }
+
+            .dinningOptionPopup {
+                position: absolute;
+                left: auto;
+                right: auto;
+                top: 47px;
+
+                .backdropBlur {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    z-index: 1;
+                    width: 100%;
+                    height: 100%;
+                    backdrop-filter: blur(1px);
+                    background: #19191C33;
+                    margin-top: 8vh;
+                }
+
+                .dinningOptionList {
+                    background-color: #fff;
+                    display: flex;
+                    flex-direction: column;
+                    width: 325px;
+                    border-radius: 15px;
+                    gap: 12px;
+                    padding: 16px;
+                    margin: auto;
+                    z-index: 2;
+                    position: relative;
+
+                    &::after {
+                        content: "";
+                        width: 26px;
+                        height: 26px;
+                        background-color: #FFFFFF;
+                        position: absolute;
+                        top: -5px;
+                        left: 0;
+                        right: 0;
+                        margin: auto;
+                        transform: rotate(45deg);
+                        border-radius: 3px;
+                        z-index: -1;
+                    }
+
+                    .dinningOptionBtn {
+                        border: 1px solid var(--stroke, #E4E4E4);
+                        padding: 0.5rem 24px;
+                        border-radius: 5px;
+                        background-color: #fff;
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        justify-content: space-between;
+
+                        // .form-check-label {
+                        //     margin: 0;
+                        //     color: #1B2123;
+                        //     font-size: 16px;
+                        //     font-weight: 500;
+                        //     display: flex;
+                        //     align-items: center;
+                        //     gap: 12px;
+                        // }
+
+                        // .form-check-input {
+                        //     margin: 0;
+                        //     border-color: #4A5254;
+
+                        //     &:focus {
+                        //         box-shadow: none;
+                        //     }
+
+                        //     &:checked {
+                        //         background-color: #FFA500;
+                        //         border-color: #FFA500;
+                        //         --bs-form-check-bg-image: url("../../../assets/images/checkIcon.png");
+                        //         background-size: auto;
+                        //         background-position: center;
+                        //         width: 20px;
+                        //         height: 20px;
+                        //     }
+                        // }
+                    }
+
+                    .actionButton {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+
+                        button {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Responsive Media Query
+@media (max-width: 991px) {
+    .user-header {
+        padding: 0 15px;
+
+        .navbar-toggler {
+            padding: 3px 5px;
+        }
+
+        .navbar-nav {
+            .nav-item {
+                .divider {
+                    margin: 0 10px;
+                }
+            }
+        }
+    }
+}

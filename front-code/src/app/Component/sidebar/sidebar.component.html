@@ -1,0 +1,31 @@
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand demo d-flex justify-content-center">
+        <a class="app-brand-link">
+            <span class="app-brand-logo demo">
+                <img src="../../../assets/logo.png" height="60" alt="">
+            </span>
+        </a>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm d-flex align-items-center justify-content-center"></i>
+        </a>
+    </div>
+    <div class="menu-inner-shadow"></div>
+    <ul class="menu-inner py-1">
+        <li class="menu-item" [routerLink]="menu.url"
+            [ngClass]="{'active' : router.url.includes(menu.url),'open' :router.url.includes(menu.url),'d-block' : menu.childData.length > 0 }"
+            routerLinkActive="active" *ngFor="let menu of authUserData">
+            <a href=" javascript:void(0);" class="menu-link" [ngClass]="menu.childData.length > 0 ? 'menu-toggle' : ''">
+                <i class="menu-icon tf-icons" [ngClass]="menu.icon != 'null' ? menu.icon : ''"></i>
+                <div class="text-truncate" data-i18n="Dashboards">{{menu.name}}</div>
+            </a>
+            <ul class="menu-sub" *ngIf="menu.childData.length > 0">
+                <li class="menu-item" [routerLink]="children.url" *ngFor="let children of menu.childData"
+                    routerLinkActive="active">
+                    <a class="menu-link">
+                        <div class="text-truncate">{{children.name}}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</aside>

@@ -1,0 +1,26 @@
+<div class="custome-modal" id="Deletemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Edit Image</div>
+                <button type="button" class="btn-close" (click)="this.dialogRef.close()"></button>
+            </div>
+            <div class="modal-body mb-5">
+                <image-cropper [aspectRatio]="data.aspectRatio == 1 ? 2 / 4 : 2 / 4" [maintainAspectRatio]="true"
+                    [imageFile]="data.file" [autoCrop]="false" outputFormat="blob"
+                    [transform]="transform"></image-cropper>
+                <div mat-dialog-actions class="d-flex justify-content-center">
+                    <mat-slider class="zoom-slider">
+                        <input matSliderThumb (input)="onSliderChange($event)" [value]="zoom" [min]="max * -1"
+                            [max]="max">
+                    </mat-slider>
+                </div>
+            </div>
+            <div class="modal-footer mt-4">
+                <button class="theme_btn" (click)="onAccept()">
+                    Accept
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+            <!-- Register -->
+            <div class="card px-sm-6 px-0">
+                <div class="card-body py-0">
+                    <!-- Logo -->
+                    <div class="app-brand justify-content-center">
+                        <a class="app-brand-link gap-2 my-4">
+                            <span class="app-brand-logo demo">
+                                <img src="../../assets/logo.png" width="150" alt="">
+                            </span>
+                            <!-- <span class="app-brand-text demo text-heading fw-bold">JOB MANAGEMENT</span> -->
+                        </a>
+                    </div>
+                    <!-- /Logo -->
+                    <app-login *ngIf="isLoginFlag" (isLoginFlag)="login()" (isSendOTPFlag)="otpSend()" />
+                    <!-- <app-send-otp *ngIf="isSendOTPFlag" (isLoginFlag)="loginPage()"
+                        (sendOTP)="otpVerificationPage($event)" />
+
+                    <app-otp *ngIf="isOTPVerifyFlag" (isLoginFlag)="loginPage()" (verifyOTP)="forgotPasswordPage()"
+                        [storeId]="storeId" />
+                    <app-password-reset *ngIf="isNewPassword" [storeId]="storeId" (isLoginFlag)="loginPage()" /> -->
+                </div>
+            </div>
+            <!-- /Register -->
+        </div>
+    </div>
+</div>

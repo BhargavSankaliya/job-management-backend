@@ -1,0 +1,24 @@
+<!-- <h4 class="mb-1">Welcome to Jewellery Shop! 👋</h4>
+<p class="mb-6">Please sign-in to your account.</p> -->
+
+<form id="formAuthentication" class="mb-6" [formGroup]="loginForm">
+    <div class="mb-6">
+        <app-input-text label="Email ID" placeholder="Enter Email ID" type="text"
+            [control]="$any(loginForm.get('email'))" />
+
+    </div>
+    <div class="mb-6 form-password-toggle">
+        <app-input-text label="Password" placeholder="Enter Password" type="password"
+            [control]="$any(loginForm.get('password'))" />
+    </div>
+    <!-- <div class="mb-4">
+        <div class="d-flex justify-content-between mt-4">
+            <a (click)="forgotPassword()">
+                <span>Forgot Password ?</span>
+            </a>
+        </div>
+    </div> -->
+    <div class="mb-6">
+        <button class="btn btn-primary d-grid w-100" type="button" (click)="login()">Login</button>
+    </div>
+</form>

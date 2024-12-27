@@ -1,0 +1,54 @@
+<div class="card">
+    <div class="card-header">
+        <div class="d-md-flex align-items-center justify-content-between">
+            <h5 class="mb-0">{{isEdit ? 'Update' : 'Create'}} User</h5>
+            <div>
+                <button class="btn btn-primary" (click)="location.back()">Back to list</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body mb-3">
+        <form [formGroup]="userCreateForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="First Name" placeholder="Enter First Name" type="text"
+                        [control]="$any(userCreateForm.get('firstName'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Last Name" placeholder="Enter Last Name" type="text"
+                        [control]="$any(userCreateForm.get('lastName'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Email" placeholder="Enter Email" type="text"
+                        [control]="$any(userCreateForm.get('email'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Password" placeholder="Enter Password" type="password"
+                        [control]="$any(userCreateForm.get('password'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Phone" placeholder="Enter Phone" type="text"
+                        [control]="$any(userCreateForm.get('phone'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Address" placeholder="Enter Address" type="text"
+                        [control]="$any(userCreateForm.get('address'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-dropdown [control]="$any(userCreateForm.get('gender'))" key="name" value="value"
+                        [dropdownData]="genderList" [clearable]="false" placeholder="Select Gender" [isMultiple]="false"
+                        label="Gender"></app-dropdown>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-dropdown [control]="$any(userCreateForm.get('roleId'))" key="name" value="_id"
+                        [dropdownData]="roleList" [clearable]="false" placeholder="Select Role" [isMultiple]="false"
+                        label="Role"></app-dropdown>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-end">
+        <button class="btn btn-outline-danger me-2" (click)="location.back()">Cancel</button>
+        <button class="btn btn-primary" (click)="createUser()">{{isEdit ? 'Update' : 'Create'}}</button>
+    </div>
+</div>

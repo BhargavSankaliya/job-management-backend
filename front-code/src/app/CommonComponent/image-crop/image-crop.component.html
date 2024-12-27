@@ -1,0 +1,26 @@
+
+<div class="modal fade show d-block" id="modalCenter">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Edit Image</div>
+            </div>
+            <div class="modal-body">
+                <image-cropper [aspectRatio]="this.data.aspectRatio == 1 ? 4 / 3 : 6.65 / 1"
+                    [maintainAspectRatio]="true" [imageFile]="data.file" [autoCrop]="false" outputFormat="blob"
+                    [transform]="transform"></image-cropper>
+                <div mat-dialog-actions class="d-flex justify-content-center">
+                    <mat-slider class="zoom-slider">
+                        <input matSliderThumb (input)="onSliderChange($event)" [value]="zoom" [min]="max * -1"
+                            [max]="max">
+                    </mat-slider>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" (click)="onAccept()">
+                    Accept
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

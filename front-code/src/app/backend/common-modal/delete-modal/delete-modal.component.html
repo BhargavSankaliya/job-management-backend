@@ -1,0 +1,23 @@
+<div class="modal fade show d-block" id="modalCenter">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCenterTitle">{{data.title}}</h5>
+                <button type="button" class="btn-close" (click)="dialogRef.close({success:false})"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        {{data.description}}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" (click)="dialogRef.close({success:false})" class="btn btn-outline-secondary">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" (click)="confirm()">{{data.buttonName}}</button>
+            </div>
+        </div>
+    </div>
+</div>

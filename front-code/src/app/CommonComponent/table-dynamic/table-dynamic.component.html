@@ -1,0 +1,123 @@
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <!-- // table header column dynamic setup -->
+                <th class="col" [ngClass]="{ pointer: sortableColumns[i] }"
+                    *ngFor="let column of headers; let i = index" (click)="sortByColumn(i)">
+                    {{ column.name }}
+                    <span *ngIf="sortableColumns[i]" class="sort-by">
+                        <!-- <img src="../../../assets/shorting-icon.svg" /> -->
+                    </span>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="
+            let column of tableData
+              | paginate
+                : {
+                    itemsPerPage: pageSize,
+                    currentPage: currentPage,
+                    id: tablePaginationId
+                  };
+            let columnIndex = index
+          ">
+                <!-- // body data  -->
+                <td *ngFor="let data of headers; let dataIndex = index"
+                    [ngClass]="{'color-red': routableColumns[dataIndex],'white-space-pre-line': data.key == 'description'}"
+                    (click)="routableColumns[dataIndex] ? selectView(column._id) : ''">
+
+                    <span [ngSwitch]="data.key">
+                        <ng-container *ngSwitchCase="'action'">
+                            <span [ngSwitch]="true" class="action">
+                                <div class="action-inner">
+                                    <!-- view icon start -->
+                                    <span (click)="selectView(column._id)"
+                                        *ngSwitchCase="column.action && column.action.view">
+                                        <i class="menu-icon tf-icons bx bxs-show" [matTooltip]="'View'"></i>
+                                    </span>
+                                    <!-- view icon end -->
+
+                                    <!-- Edit icon start -->
+                                    <span (click)="selectEdit(column._id)"
+                                        *ngSwitchCase="column.action && column.action.edit">
+                                        <!-- <img src="../../../assets/edit-icon.svg" [matTooltip]="'Edit'" alt="edit"
+                                            title="Edit" /> -->
+                                        <i class="menu-icon tf-icons bx bx-pencil" [matTooltip]="'Edit'"></i>
+                                    </span>
+                                    <!-- Edit icon end -->
+
+                                    <!-- Delete icon start -->
+                                    <span (click)="selectDelete(column._id)"
+                                        *ngSwitchCase="column.action && column.action.delete">
+                                        <i class="menu-icon tf-icons bx bx-trash" [matTooltip]="'Delete'"></i>
+                                        <!-- <img src="../../../assets/delete-icon.svg" alt="delete"
+                                            [matTooltip]="'Inactive'" title="Delete" /> -->
+                                    </span>
+                                    <!-- Delete icon end -->
+
+                                    <!-- Minus icon start -->
+                                    <span (click)="selectDelete(column._id)"
+                                        *ngSwitchCase="column.action && column.action.minus">
+                                        <i class="menu-icon tf-icons bx bx-minus" [matTooltip]="'Inactive'"></i>
+                                        <!-- <img src="../../../assets/delete-icon.svg" alt="delete"
+                                            [matTooltip]="'Inactive'" title="Delete" /> -->
+                                    </span>
+                                    <!-- Minus icon end -->
+
+                                    <!-- Delete icon start -->
+                                    <span (click)="selectDelete(column._id)"
+                                        *ngSwitchCase="column.action && column.action.plus">
+                                        <i class="menu-icon tf-icons bx bx-plus" [matTooltip]="'Active'"></i>
+                                        <!-- <img src="../../../assets/delete-icon.svg" alt="delete"
+                                            [matTooltip]="'Inactive'" title="Delete" /> -->
+                                    </span>
+                                    <!-- Delete icon end -->
+
+                                </div>
+
+                            </span>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'status'">
+                            <span [ngSwitch]="true">
+                                <span *ngSwitchCase="column.status == 'Active'">
+                                    <span class="badge bg-success"> {{column.status}} </span>
+                                </span>
+                                <span *ngSwitchCase="column.status == 'Inactive'">
+                                    <span class="badge bg-danger"> {{column.status}} </span>
+                                </span>
+                            </span>
+                        </ng-container>
+                        <ng-container *ngSwitchDefault>
+                            <span [innerHTML]="column[data.key]"></span>
+                        </ng-container>
+                    </span>
+                </td>
+            </tr>
+            <tr class="text-center" *ngIf="tableData.length == 0">
+                <td [attr.colspan]="headersLength">
+                    No data avilable
+                </td>
+            </tr>
+            <tr>
+                <td [colSpan]="headers.length" style="padding: 0; border: 0;">
+                    <div class="table-footer">
+                        <p>
+                            {{ tableData.length > 0 ? pageSize * (currentPage - 1) + 1 : 0 }} -
+                            {{pageSize * (currentPage - 1) + pageSize < tableData.length ? pageSize * (currentPage - 1)
+                                + pageSize : tableData.length }} of {{ tableData.length }} </p>
+                                <pagination-controls class="m-0 p-0" [id]="tablePaginationId"
+                                    (pageChange)="currentPage = $event" previousLabel="Previous"
+                                    nextLabel="Next"></pagination-controls>
+                                <div class="d-flex align-items-center gap-2 selectedRow">
+                                    <p class="m-0">Limit</p>
+                                    <app-pagination-limit (optionSelected)="changePageSize($event)"
+                                        [itemPerPage]="pageSize" />
+                                </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

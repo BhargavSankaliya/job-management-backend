@@ -1,0 +1,74 @@
+<div class="row">
+    <div class="col-6">&nbsp;</div>
+    <div class="col-6">
+        <div class="row" [formGroup]="dashboardForm">
+            <div class="col-md-6 col-12 mb-6">
+                <label for="flatpickr-start-date" class="form-label">Start Date</label>
+                <input type="text" class="form-control flatpickr-input active" formControlName="startDate"
+                    placeholder="DD-MM-YYYY" id="flatpickr-start-date" readonly="readonly">
+            </div>
+            <div class="col-md-6 col-12 mb-6">
+                <label for="flatpickr-end-date" class="form-label">End Date</label>
+                <input type="text" class="form-control flatpickr-input active" formControlName="endDate"
+                    placeholder="DD-MM-YYYY" id="flatpickr-end-date" readonly="readonly">
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 order-1">
+        <div class="row" *ngIf="!!taskCounts">
+            <div class="col-lg-3 col-md-6 col-6 mb-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{taskCounts.todo}}</h4>
+                        <h4 class="mb-1 rounded badge bg-label-info">To Do</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-6 mb-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{taskCounts.progress}}</h4>
+                        <h4 class="mb-1 rounded badge bg-label-warning">In Progress</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-6 mb-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{taskCounts.completed}}</h4>
+                        <h4 class="mb-1 rounded badge bg-label-success">Completed</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-6 mb-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{taskCounts.all}}</h4>
+                        <h4 class="mb-1 rounded badge bg-label-primary">Total Task</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xxl-12 order-2 mb-6">
+        <div class="card">
+            <div class="row row-bordered g-0">
+                <div class="col-lg-12">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="card-title mb-0">
+                            <h5 class="m-0 me-2">Task Details</h5>
+                        </div>
+                        <div>
+                            <app-dropdown [control]="$any(dashboardForm.get('userId'))" key="firstName" value="_id"
+                                [dropdownData]="userList" (dropdownChanged)="getCounts()" [clearable]="false" placeholder="Select User"
+                                [isMultiple]="false" label=""></app-dropdown>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 p-4">
+                    <app-table-dynamic [headers]="headerData" [tableData]="taskList" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

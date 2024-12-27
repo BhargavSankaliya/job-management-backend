@@ -1,0 +1,134 @@
+<div class="card mb-6">
+    <div class="card-header pb-0">
+        <div class="d-flex align-items-center justify-content-between ">
+            <h5 class="mb-0">Task Details</h5>
+            <div class="d-md-flex gap-2">
+                <button class="btn btn-primary" (click)="location.back()">Back</button>
+            </div>
+        </div>
+    </div>
+    <!-- Current Plan -->
+    <div class="row">
+        <div class="col-md-8 mb-2 pe-md-0">
+            <div class="card-body" *ngIf="taskDetails">
+                <div class="row title-details m-0">
+                    <div class="col-md-4 mb-1">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Job No. :</h6>
+                            <p>{{taskDetails.jobNo}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Counter :</h6>
+                            <p>{{taskDetails.counter}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Party Name :</h6>
+                            <p>{{taskDetails.partyName}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Job Name :</h6>
+                            <p>{{taskDetails.jobName}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1" *ngIf="taskDetails.size">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Size :</h6>
+                            <p>{{taskDetails.size}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1" *ngIf="taskDetails.taskPriority">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Priority :</h6>
+                            <p>{{taskDetails.taskPriority}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1" *ngIf="taskDetails.taskStatus">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Status :</h6>
+                            <p class="badge"
+                                [ngClass]="taskDetails.taskStatus == 'Completed' ? 'bg-success' : taskDetails.taskStatus == 'ToDo' ? 'bg-info' : 'bg-warning'">
+                                {{taskDetails.taskStatus}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Assign User :</h6>
+                            <p>{{taskDetails.userDetails.firstName + " " + taskDetails.userDetails.lastName}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Created At :</h6>
+                            <p>{{taskDetails.createdAt | date : 'dd/MM/yyyy'}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1" *ngIf="taskDetails.completedPicture">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Completed Images :</h6>
+                            <img [src]="environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture" class="rounded" width="100" alt="">
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-1" *ngIf="taskDetails.category.length > 0">
+                        <div class="row">
+                            <div class="col-md-4 mb-1" *ngFor="let cat of taskDetails.category">
+                                <div class="mb-2">
+                                    <h6 class="mb-1">{{cat.name}} :</h6>
+                                    <p>{{cat.value}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1" *ngIf="taskDetails.operator">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Operator :</h6>
+                            <p>{{taskDetails.operator}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1" *ngIf="taskDetails.transportation">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Transportation :</h6>
+                            <p>{{taskDetails.transportation}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-1" *ngIf="taskDetails.Note">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Note :</h6>
+                            <p>{{taskDetails.Note}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="d-md-flex align-items-center justify-content-between mb-2">
+                        <h5 class="mb-0">Work Hours of User :</h5>
+                    </div>
+                    <app-table-dynamic [headers]="headerData" [tableData]="workingUserTimeList" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 ps-md-0">
+            <div class="card-body" *ngIf="taskDetails">
+                <!-- <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="mb-0">Task Comments</h5>
+                </div> -->
+                <div class="row title-details m-0">
+                    <div class="col-md-12 mb-2" *ngFor="let comment of taskCommentList">
+                        <h6 class="mb-0"><strong>{{comment.userDetails.firstName + " " +
+                                comment.userDetails.lastName}}</strong>
+                        </h6>
+                        <p class="m-0">{{comment.comment}}</p>
+                        <p>
+                            {{comment.startTime | date: 'dd/MM/yyyy hh:mm:ss'}}
+                        </p>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

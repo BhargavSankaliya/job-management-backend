@@ -1,0 +1,39 @@
+<label *ngIf="!!label" class="form-label">{{label}} <span
+        *ngIf="control.errors && (control.errors['required'] || control.errors['maxlength'] || control.errors['min'] || control.errors['whitespace'] || control.errors['minlength'])"
+        class="color-red text-danger">*</span></label>
+<div class="input-group">
+    <input class="form-control" [class]="class" [formControl]="control" trim [type]="type" [placeholder]="placeholder"
+        [required]="required" [readonly]="readonly">
+    <input class="form-control weight-name" [class]="class" [formControl]="control2" trim [type]="type2"
+        [placeholder]="placeholder2" [required]="required2" [readonly]="readonly2">
+</div>
+
+
+<ng-container *ngIf="displayErrors()">
+    <div *ngIf="control.errors" class="text-danger">
+
+        <div *ngIf="control.errors['required'] || control.errors['whitespace']">This value is required.</div>
+
+        <div *ngIf="control.errors['pattern']">
+            Please enter a valid email address.
+        </div>
+
+        <div *ngIf="control.errors['minlength']">
+            This value has {{ control.errors['minlength'].actualLength }} but must be
+            at least {{ control.errors['minlength'].requiredLength }}.
+        </div>
+
+        <div *ngIf="control.errors['maxlength']">
+            This value has {{ control.errors['maxlength'].actualLength }} but must be
+            less than {{ control.errors['maxlength'].requiredLength }}.
+        </div>
+
+        <div *ngIf="control.errors['min']">
+            This value must be greater than 0.
+        </div>
+
+        <div *ngIf="control.errors['confirmedValidator']">
+            Password not match.
+        </div>
+    </div>
+</ng-container>

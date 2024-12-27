@@ -1,0 +1,38 @@
+<label class="form-label" *ngIf="!!label">{{label}} <span
+        *ngIf="control.errors && (control.errors['required'] || control.errors['maxlength'] || control.errors['min'] || control.errors['whitespace'] || control.errors['minlength'])"
+        class="color-red text-danger">*</span></label>
+
+<ng-select [items]="dropdownData" [clearable]="clearable" [searchable]="searchable" [multiple]="isMultiple"
+    class="form-select p-0" [bindLabel]="key" [bindValue]="value" (ngModelChange)="selectedValue()"
+    [closeOnSelect]="isCloseOnSelect" [formControl]="control" [placeholder]="placeholder">
+    <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index" *ngIf="isMultiple">
+        <label class="d-flex align-items-center" (click)="$event.preventDefault()">
+            <input id="item-{{index}}" type="checkbox" class="form-check-input p-0 mt-0 me-2" [ngModel]="item$.selected"
+                [ngModelOptions]="{standalone: true}" />
+            {{item[key]}}
+        </label>
+    </ng-template>
+</ng-select>
+
+<ng-container *ngIf="displayErrors()">
+    <div *ngIf="control.errors" class="text-danger">
+
+        <div *ngIf="control.errors['required']">This value is required</div>
+
+        <div *ngIf="control.errors['pattern']">
+            Please enter a valid email address.
+        </div>
+
+        <div *ngIf="control.errors['minlength']">
+            This value has {{ control.errors['minlength'].actualLength }} but must be
+            at least {{ control.errors['minlength'].requiredLength }}
+        </div>
+
+        <div *ngIf="control.errors['maxlength']">
+            This value has {{ control.errors['maxlength'].actualLength }} but must be
+            less than {{ control.errors['maxlength'].requiredLength }}.
+        </div>
+
+    </div>
+
+</ng-container>

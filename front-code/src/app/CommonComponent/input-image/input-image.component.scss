@@ -1,0 +1,93 @@
+// .hiddenFileInput>input {
+//     height: 110px;
+//     width: 220px;
+//     opacity: 0;
+//     cursor: pointer;
+// }
+
+// .hiddenFileInput {
+//     border: 1px dashed #FFA500;
+//     width: 200px;
+//     background: #FFFCF6;
+//     border-radius: 5px;
+//     height: 110px;
+//     display: inline-block;
+//     overflow: hidden;
+//     cursor: pointer;
+//     background: center center no-repeat;
+//     background-size: 36px 36px;
+//     background-image: url('../../../assets/file-upload-icon.svg');
+// }
+// .upload_main_box{
+//     .image-box{
+//         position: relative;
+//         border-radius: 5px;
+//         overflow: hidden;
+//         width: 200px;
+//         height: 110px;
+//         border: 1px solid gray;
+//         .preview{
+//             width: 100%;
+//             height: 100%;
+//         }
+//         .icon{
+//             top: 8px;
+//             right: 8px;
+//             position: absolute;
+//         }
+//     }
+// }
+.mediaList {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .uploadImgBox {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-radius: 5px;
+        border: 1.5px dashed var(--yellow, #696cff);
+        background: rgba(105, 108, 255, 0.16);;
+        width: 234px;
+        height: 140px;
+        padding: 10px 15px;
+        color: #676767;
+        font-size: 12px;
+        font-weight: 400;
+        text-align: center;
+
+        input {
+            opacity: 0;
+            cursor: pointer;
+        }
+    }
+
+    .uplodedImg {
+        width: 200px;
+        height: 140px;
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid gainsboro;
+
+        .uploadedImg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .trash {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #dcdcdc;
+            background: var(--white, #fff);
+            line-height: 0;
+        }
+    }
+}

@@ -1,0 +1,10 @@
+.searchBox {
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    .searchIcon {
+        position: absolute;
+        right: 5%;
+    }
+}

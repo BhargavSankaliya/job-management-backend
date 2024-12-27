@@ -1,0 +1,92 @@
+@import "../node_modules/@ng-select/ng-select/themes/default.theme.css";
+@import "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css";
+
+@import "./assets/vendor/fonts/boxicons.css";
+@import "./assets/vendor/css/core.css";
+@import "./assets/vendor/css/theme-default.css";
+@import "./assets/css/demo.css";
+@import "./assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css";
+@import "./assets/vendor/libs/apex-charts/apex-charts.css";
+@import "./assets/vendor/css/pages/page-auth.css";
+
+
+
+.Breadcrumb {
+    padding: 0px 0px 16px 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    ul {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            color: #1B2123;
+            font-size: 18px;
+            font-weight: 500;
+
+            &.active {
+                color: #4A5254;
+            }
+        }
+    }
+}
+
+.btn-primary {
+    background-color: #1B2123;
+}
+
+
+
+$primary-color: linear-gradient(90deg, #0B132B 0%, #3A506B 100%);
+$error-color: #fff;
+
+// Body content
+.body-content {
+    background-color: $primary-color !important;
+    margin: 10px;
+    padding: 10px;
+}
+
+.body-content--error {
+    background-color: $error-color !important;
+}
+
+//Button (primary)
+.btn-primary {
+    background-color: $primary-color !important;
+}
+
+.btn-primary--error {
+    background-color: $error-color !important;
+}
+
+// Links in the .content list
+.content-list-link {
+    color: $primary-color !important;
+    border-color: $primary-color !important;
+
+    &:hover {
+        background-color: $primary-color !important; 
+    }
+}
+
+.content-list-link--error {
+    color: $error-color !important;
+    border-color: $error-color !important;
+
+    &:hover {
+        background-color: $error-color !important;
+    }
+}
+
+
+.navbar {
+    z-index: 999 !important;
+}

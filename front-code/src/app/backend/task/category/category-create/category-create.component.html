@@ -1,0 +1,28 @@
+<div class="card">
+    <div class="card-header">
+        <div class="d-md-flex align-items-center justify-content-between">
+            <h5 class="mb-0">{{isEdit ? 'Update' : 'Create'}} Category</h5>
+            <div>
+                <button class="btn btn-primary" (click)="location.back()">Back to list</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body mb-3">
+        <form [formGroup]="categoryCreateForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Name" placeholder="Enter Name" type="text"
+                        [control]="$any(categoryCreateForm.get('name'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Type" placeholder="Enter Type" type="text"
+                        [control]="$any(categoryCreateForm.get('type'))" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-end">
+        <button class="btn btn-outline-danger me-2" (click)="location.back()">Cancel</button>
+        <button class="btn btn-primary" (click)="createCategory()">{{isEdit ? 'Update' : 'Create'}}</button>
+    </div>
+</div>

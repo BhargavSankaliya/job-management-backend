@@ -1,0 +1,12 @@
+.container-xxl {
+    background-image: url("../../assets/background.jpg");
+    object-fit: cover;
+    background-position: center;
+    height: 100%;
+    max-width: 100%;
+    background-repeat: no-repeat;
+
+    .card {
+        background: #ffffffed;
+    }
+}

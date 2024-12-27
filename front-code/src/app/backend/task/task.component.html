@@ -1,0 +1,27 @@
+<div class="Breadcrumb">
+    <ul>
+        <li>
+            <a routerLink="/admin/dashboard">Dashboard</a>
+        </li>
+        <li>/</li>
+        <li class="active">Task</li>
+    </ul>
+</div>
+<div class="card">
+    <div class="card-header">
+        <div class="d-md-flex align-item-center justify-content-between">
+            <div class="input-search">
+                <app-search-input (searchData)="searchFilter($event)" class="searchInput" />
+            </div>
+            <div>
+                <button class="btn btn-primary w-100" routerLink="create">
+                    Add New
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <app-table-dynamic [headers]="headerData" (clickEditIcon)="edit($event)" (clickViewIcon)="view($event)"
+            [tableData]="userList" />
+    </div>
+</div>
