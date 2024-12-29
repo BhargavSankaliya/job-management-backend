@@ -16,13 +16,13 @@ import { CommonService } from 'app/shared/common.service';
 export class HeaderComponent implements OnInit {
 
   authUserData: any;
-  storeId: any = '';
+  userId: any = '';
 
   constructor(public router: Router, public commonService: CommonService) { }
 
   ngOnInit(): void {
     this.authUserData = getSessionData(StorageKey.LOGINDETAILS);
-    this.storeId = this.authUserData.id
+    this.userId = this.authUserData._id
   }
 
   addShowClass() {

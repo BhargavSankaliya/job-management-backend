@@ -6,6 +6,7 @@ const UserModel = require("../models/userModel.js");
 const { commonFilter, convertIdToObjectId } = require("../middlewares/commonFilter.js");
 const authController = {};
 const jwt = require("jsonwebtoken");
+const Role = require("../models/roleModel.js");
 
 authController.userCreateUpdate = async (req, res, next) => {
   try {
@@ -99,6 +100,23 @@ authController.getUserById = async (req, res, next) => {
     }
 
     createResponse(user, 200, "User retrieved successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+authController.getUserByIdForAdmin = async (req, res, next) => {
+  try {
+    const { _id } = req.user; // Get the user ID from the URL parameters
+
+    // Find the user by
+    let user = await UserModel.findById(_id);
+
+    if (!user) {
+      throw new CustomError("User not found!", 404);
+    }
+
+    const role = await Role.findById(user.roleId);
+    createResponse({...user._doc,roleDetails : role}, 200, "User retrieved successfully.", res);
   } catch (error) {
     errorHandler(error, req, res);
   }

@@ -27,6 +27,8 @@ router.get('/details-user-time/:id', taskController.taskUserTimeListForAdmin);
 
 router.post('/dashboard-task-count', taskController.taskCountForDashboard);
 
+router.post('/search/:slug', taskController.searchParameter);
+
 
 
 module.exports = router

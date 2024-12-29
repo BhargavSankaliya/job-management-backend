@@ -715,17 +715,65 @@ taskController.taskUserTimeListForAdmin = async (req, res, next) => {
 
 taskController.taskCountForDashboard = async (req, res, next) => {
   try {
-    const { startDate, endDate, userId } = req.body; // Get the user ID from the URL parameters
+    const { startDate, endDate, userId, taskStatus, taskPriority } = req.body; // Get the user ID from the URL parameters
 
-    console.log(new Date(startDate));
-    console.log(new Date(endDate));
+    // console.log(new Date(startDate));
+    // console.log(new Date(endDate));
+    let matchUserCondition = {}
+    let matchStatusCondition = {}
+    let matchPriorityCondition = {}
 
-    let todoQuery = [{ $match: { createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } }, { $match: { taskStatus: "ToDo" } }]
-    let progressQuery = [{ $match: { createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } }, { $match: { taskStatus: "Progress" } }]
-    let completedQuery = [{ $match: { createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } }, { $match: { taskStatus: "Completed" } }]
-    let allQuery = [{ $match: { createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } }]
+    if (!!userId) {
+      matchUserCondition = { assignUserId: convertIdToObjectId(userId) }
+    }
+    if (!!taskStatus) {
+      matchStatusCondition = { taskStatus: taskStatus }
+    }
+    if (!!taskPriority) {
+      matchPriorityCondition = { taskPriority: taskPriority }
+    }
+
+    let todoQuery = [
+      {
+        $match: {
+          createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) },
+          taskStatus: "ToDo"
+        }
+      }
+    ];
+
+    let progressQuery = [
+      {
+        $match: {
+          taskStatus: "Progress",
+          createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) }
+        }
+      }
+    ];
+
+    let completedQuery = [
+      {
+        $match: {
+          taskStatus: "Completed",
+          createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) }
+        }
+      }
+    ];
+
+    let allQuery = [
+      {
+        $match: {
+          createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) }
+        }
+      }
+    ];
+
     let userIdWiseTaskList = [
-      { $match: { assignUserId: convertIdToObjectId(userId), createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) } } },
+      {
+        $match: {
+          createdAt: { $gte: new Date(startDate), $lt: new Date(endDate) }
+        }
+      },
       {
         $lookup: {
           from: "users",
@@ -752,11 +800,33 @@ taskController.taskCountForDashboard = async (req, res, next) => {
         }
       },
       {
-        $sort : {
-          taskPriority : -1
+        $sort: {
+          taskPriority: -1
         }
       }
     ]
+
+    if (!!userId) {
+      allQuery.push({ $match: matchUserCondition });
+      todoQuery.push({ $match: matchUserCondition });
+      progressQuery.push({ $match: matchUserCondition });
+      completedQuery.push({ $match: matchUserCondition });
+      userIdWiseTaskList.push({ $match: matchUserCondition });
+    }
+    if (!!taskStatus) {
+      allQuery.push({ $match: matchStatusCondition });
+      todoQuery.push({ $match: matchStatusCondition });
+      progressQuery.push({ $match: matchStatusCondition });
+      completedQuery.push({ $match: matchStatusCondition });
+      userIdWiseTaskList.push({ $match: matchStatusCondition });
+    }
+    if (!!taskPriority) {
+      allQuery.push({ $match: matchPriorityCondition });
+      todoQuery.push({ $match: matchPriorityCondition });
+      progressQuery.push({ $match: matchPriorityCondition });
+      completedQuery.push({ $match: matchPriorityCondition });
+      userIdWiseTaskList.push({ $match: matchPriorityCondition });
+    }
 
     const [all, todo, progress, completed, taskListByUserId] = await Promise.all([TaskModel.aggregate(allQuery), TaskModel.aggregate(todoQuery), TaskModel.aggregate(progressQuery), TaskModel.aggregate(completedQuery), TaskModel.aggregate(userIdWiseTaskList)])
 
@@ -765,6 +835,42 @@ taskController.taskCountForDashboard = async (req, res, next) => {
     errorHandler(error, req, res);
   }
 };
+
+
+
+taskController.searchParameter = async (req, res, next) => {
+  try {
+    const { slug } = req.params;
+    const { search } = req.body;
+
+    let query = [
+      {
+        $match: {
+          [slug]: { $regex: search, $options: "i" },
+        },
+      },
+      {
+        $project: {
+          [slug]: `$${slug}`,
+          _id: 0,
+        },
+      },
+    ];
+
+    const searchList = await TaskModel.aggregate(query);
+
+    if (searchList.length === 0) {
+      // Return immediately to avoid executing the next line
+      return createResponse([], 200, "Search list retrieved successfully.", res);
+    }
+
+    createResponse(searchList, 200, "Search list retrieved successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+
 
 const createTaskHistory = async (task) => {
 

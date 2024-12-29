@@ -89,6 +89,32 @@
                                 </span>
                             </span>
                         </ng-container>
+                        <ng-container *ngSwitchCase="'taskStatus'">
+                            <span [ngSwitch]="true">
+                                <span *ngSwitchCase="column.taskStatus == 'ToDo'">
+                                    <span class="badge bg-label-info"> {{column.taskStatus}} </span>
+                                </span>
+                                <span *ngSwitchCase="column.taskStatus == 'Progress'">
+                                    <span class="badge bg-label-warning"> {{column.taskStatus}} </span>
+                                </span>
+                                <span *ngSwitchCase="column.taskStatus == 'Completed'">
+                                    <span class="badge bg-label-success"> {{column.taskStatus}} </span>
+                                </span>
+                            </span>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'taskPriority'">
+                            <span [ngSwitch]="true">
+                                <span *ngSwitchCase="column.taskPriority == 'Low'">
+                                    <span class="badge bg-primary"> {{column.taskPriority}} </span>
+                                </span>
+                                <span *ngSwitchCase="column.taskPriority == 'Medium'">
+                                    <span class="badge bg-warning"> {{column.taskPriority}} </span>
+                                </span>
+                                <span *ngSwitchCase="column.taskPriority == 'High'">
+                                    <span class="badge bg-danger"> {{column.taskPriority}} </span>
+                                </span>
+                            </span>
+                        </ng-container>
                         <ng-container *ngSwitchDefault>
                             <span [innerHTML]="column[data.key]"></span>
                         </ng-container>

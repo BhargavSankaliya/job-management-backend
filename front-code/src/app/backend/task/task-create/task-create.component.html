@@ -11,32 +11,68 @@
         <form [formGroup]="taskCreateForm">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Counter" placeholder="Enter Counter" type="text"
+                    <app-input-text label="Estimated Counter" placeholder="Enter Estimated Counter" type="text"
                         [control]="$any(taskCreateForm.get('counter'))" />
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Priority" placeholder="Enter Priority" type="number"
-                        [control]="$any(taskCreateForm.get('taskPriority'))" />
+                    <app-dropdown [control]="$any(taskCreateForm.get('taskPriority'))" key="name" value="value"
+                        [dropdownData]="priorityList" [clearable]="false" placeholder="Select Priority"
+                        [isMultiple]="false" label="Task Priority"></app-dropdown>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Party Name" placeholder="Enter Party Name" type="text"
-                        [control]="$any(taskCreateForm.get('partyName'))" />
+                    <!-- <app-input-text label="Party Name" placeholder="Enter Party Name" type="text"
+                        [control]="$any(taskCreateForm.get('partyName'))" /> -->
+                    <label for="">Party Name</label>
+                    <input type="text" class="form-control" matInput
+                        [formControl]="$any(taskCreateForm.get('partyName'))" [matAutocomplete]="auto"
+                        placeholder="Enter Party Name">
+                    <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option *ngFor="let option of partyNameList" [value]="option.partyName">
+                            {{ option.partyName }}
+                        </mat-option>
+                    </mat-autocomplete>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Job Name" placeholder="Enter Job Name" type="text"
-                        [control]="$any(taskCreateForm.get('jobName'))" />
+                    <label for="">Job Name</label>
+                    <input type="text" class="form-control" matInput [formControl]="$any(taskCreateForm.get('jobName'))"
+                        [matAutocomplete]="jobAuto" placeholder="Enter Job Name">
+                    <mat-autocomplete #jobAuto="matAutocomplete">
+                        <mat-option *ngFor="let option of jobNameList" [value]="option.jobName">
+                            {{ option.jobName }}
+                        </mat-option>
+                    </mat-autocomplete>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Size" placeholder="Enter Size" type="text"
-                        [control]="$any(taskCreateForm.get('size'))" />
+                    <label for="">Size</label>
+                    <input type="text" class="form-control" matInput [formControl]="$any(taskCreateForm.get('size'))"
+                        [matAutocomplete]="sizeAuto" placeholder="Enter Size">
+                    <mat-autocomplete #sizeAuto="matAutocomplete">
+                        <mat-option *ngFor="let option of sizeList" [value]="option.size">
+                            {{ option.size }}
+                        </mat-option>
+                    </mat-autocomplete>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Operator" placeholder="Enter Operator" type="text"
-                        [control]="$any(taskCreateForm.get('operator'))" />
+                    <label for="">Operator</label>
+                    <input type="text" class="form-control" matInput
+                        [formControl]="$any(taskCreateForm.get('operator'))" [matAutocomplete]="operatorAuto"
+                        placeholder="Enter Operator">
+                    <mat-autocomplete #operatorAuto="matAutocomplete">
+                        <mat-option *ngFor="let option of operatorList" [value]="option.operator">
+                            {{ option.operator }}
+                        </mat-option>
+                    </mat-autocomplete>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Transportation" placeholder="Enter Transportation" type="text"
-                        [control]="$any(taskCreateForm.get('transportation'))" />
+                    <label for="">Transportation</label>
+                    <input type="text" class="form-control" matInput
+                        [formControl]="$any(taskCreateForm.get('transportation'))"
+                        [matAutocomplete]="transportationAuto" placeholder="Enter Transportation">
+                    <mat-autocomplete #transportationAuto="matAutocomplete">
+                        <mat-option *ngFor="let option of transportationList" [value]="option.transportation">
+                            {{ option.transportation }}
+                        </mat-option>
+                    </mat-autocomplete>
                 </div>
                 <div class="col-md-6 mb-3">
                     <app-input-text label="Note" placeholder="Enter Note" type="text"
@@ -51,13 +87,12 @@
             <div class="row mt-4">
                 <h4>Category Details</h4>
                 <div class="row">
-                    <div class="col-md-4 mb-3" *ngFor="let category of categoryList">
+                    <div class="col-md-4 mb-3" *ngFor="let category of categoryList;let catIndex = index">
                         <span *ngIf="category.type == 'checkbox'">
                             <label for="">&nbsp;</label>
                             <span>{{category.name}}</span>
-                            <input [type]="category.type" [(ngModel)]="category.isChecked"
-                                [ngModelOptions]="{standalone: true}" [checked]="category.isChecked"
-                                class="form-check-input p-0 mt-0 ms-2">
+                            <input [type]="category.type" (change)="updateCategoryCheck($event,catIndex)"
+                                [checked]="category.isChecked" class="form-check-input p-0 mt-0 ms-2">
                         </span>
                         <span *ngIf="category.type == 'text'">
                             <label for="">{{category.name}}</label>

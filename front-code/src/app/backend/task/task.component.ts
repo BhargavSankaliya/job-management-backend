@@ -18,7 +18,7 @@ import moment from 'moment'
 export class TaskComponent {
   headerData: any[] = [
     { key: 'jobNo', name: 'JOB NO.' },
-    { key: 'counter', name: 'COUNTER' },
+    { key: 'counter', name: 'ESTIMATED COUNTER' },
     { key: 'partyName', name: 'PARTY NAME' },
     { key: 'jobName', name: 'JOB NAME' },
     { key: 'size', name: 'SIZE' },

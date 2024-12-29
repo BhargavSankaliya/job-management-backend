@@ -25,6 +25,10 @@ export class TaskService {
     let taskCreate = await this.httpService.post(id ? 'task?id=' + id : 'task', bodyData).toPromise()
     return taskCreate;
   }
+  async getPartyName(search: any, value: any) {
+    let partyName = await this.httpService.post(`task/search/${search}`, { search: value }).toPromise()
+    return partyName.data;
+  }
 
   async taskDetailsById(id: string) {
     let taskDetails = await this.httpService.get('task/details/' + id).toPromise();

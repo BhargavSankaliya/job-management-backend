@@ -32,6 +32,7 @@ export class UserCreateComponent {
 
   ngOnInit(): void {
     this.defaultForm();
+    debugger
     this.getRoleList(false);
     let check: any = this.route.snapshot.paramMap.get('userId');
     if (!!check) {
@@ -90,7 +91,12 @@ export class UserCreateComponent {
     let createUpdateUser = await this.userService.userCreate(this.userId, object);
     if (createUpdateUser.meta.code == 200) {
       notification('success', createUpdateUser.meta.message, 1000);
-      this.router.navigateByUrl('admin/users');
+      if (this.router.url.includes("profile")) {
+        this.location.back()
+      }
+      else {
+        this.router.navigateByUrl('admin/users');
+      }
       this.userService.userLists = []
     }
   }

@@ -8,9 +8,15 @@ export class DashboardService {
 
   constructor(public httpService: HttpServiceService) { }
 
-  async getCountForTask(data: { startDate: any, endDate: any, userId: any }) {
+  async getCountForTask(data: any) {
+    debugger
     let count: any = await this.httpService.post("task/dashboard-task-count", data).toPromise();
     return count.data
+  }
+
+  async getUserDetails() {
+    let response: any = await this.httpService.get("user/details-fAdmin").toPromise();
+    return response.data
   }
 
 }

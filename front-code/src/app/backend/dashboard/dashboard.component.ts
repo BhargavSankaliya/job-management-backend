@@ -89,36 +89,51 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     { key: 'taskPriority', name: 'PRIORITY' },
     { key: 'taskStatus', name: 'STATUS' },
   ]
+  priorityList: any[] = [
+    { name: "Low", value: 1 },
+    { name: "Medium", value: 2 },
+    { name: "High", value: 3 },
+  ]
+  taskStatus: any[] = [
+    { name: "ToDo", value: 'ToDo' },
+    { name: "Progress", value: 'Progress' },
+    { name: "Completed", value: 'Completed' },
+  ]
 
   defaultForm() {
     this.dashboardForm = this.fb.group({
       startDate: [null, [Validators.required]],
       endDate: [null, [Validators.required]],
-      userId: [null]
+      userId: [null],
+      status: [null],
+      priority: [null]
     })
   }
 
   async getUserList() {
     let users: any[] = await this.userService.getUserList(false);
     this.userList = users;
-    this.dashboardForm.controls['userId'].setValue(this.userList[0]._id)
     this.getCounts();
 
   }
 
   async getCounts() {
-    if (this.dashboardForm.value.userId) {
-      let object = {
-        startDate: moment(this.startDatePicker.selectedDates && this.startDatePicker.selectedDates[0] ? moment(this.startDatePicker.selectedDates[0]).startOf('day').toDate() : moment().startOf('week').toDate()).toDate(),
-        endDate: moment(this.endDatePicker.selectedDates && this.endDatePicker.selectedDates[0] ? moment(this.endDatePicker.selectedDates[0]).endOf('day').toDate() : moment().endOf('week').toDate()).toDate(),
-        userId: this.dashboardForm.value.userId
-      }
-
-      let count = await this.dashboardService.getCountForTask(object);
-      this.taskCounts = count
-      this.taskList = count.taskListByUserId
+    let object = {
+      startDate: moment(this.startDatePicker.selectedDates && this.startDatePicker.selectedDates[0] ? moment(this.startDatePicker.selectedDates[0]).startOf('day').toDate() : moment().startOf('week').toDate()).toDate(),
+      endDate: moment(this.endDatePicker.selectedDates && this.endDatePicker.selectedDates[0] ? moment(this.endDatePicker.selectedDates[0]).endOf('day').toDate() : moment().endOf('week').toDate()).toDate(),
+      userId: this.dashboardForm.value.userId,
+      taskStatus: this.dashboardForm.value.status,
+      taskPriority: this.dashboardForm.value.priority,
     }
 
+    let count = await this.dashboardService.getCountForTask(object);
+    this.taskCounts = count;
+    if (count.taskListByUserId.length > 0) {
+      count.taskListByUserId.map((x) => {
+        x.taskPriority = x.taskPriority == 1 ? 'Low' : x.taskPriority == 2 ? 'Medium' : "High"
+      })
+    }
+    this.taskList = count.taskListByUserId
   }
 
 }

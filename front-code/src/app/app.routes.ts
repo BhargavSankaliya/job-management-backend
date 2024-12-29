@@ -13,6 +13,7 @@ import { TaskCreateComponent } from './backend/task/task-create/task-create.comp
 import { TaskViewComponent } from './backend/task/task-view/task-view.component';
 import { CategoryComponent } from './backend/task/category/category.component';
 import { CategoryCreateComponent } from './backend/task/category/category-create/category-create.component';
+import { ProfileComponent } from './backend/profile/profile.component';
 
 export const routes: Routes = [
     // auth url
@@ -24,6 +25,8 @@ export const routes: Routes = [
         component: BackendComponent,
         children: [
             { path: 'dashboard', component: DashboardComponent },
+            { path: 'profile', component: ProfileComponent },
+            { path: 'profile/:userId', component: UserCreateComponent },
 
             { path: 'auth/menus', component: MenusComponent },
             { path: 'auth/menus/create', component: MenuCreateComponent },

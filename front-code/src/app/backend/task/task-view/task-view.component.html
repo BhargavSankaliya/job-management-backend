@@ -71,7 +71,8 @@
                     <div class="col-md-4 mb-1" *ngIf="taskDetails.completedPicture">
                         <div class="mb-2">
                             <h6 class="mb-1">Completed Images :</h6>
-                            <img [src]="environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture" class="rounded" width="100" alt="">
+                            <img [src]="environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture"
+                                class="rounded" width="100" alt="">
                         </div>
                     </div>
                     <div class="col-md-12 mb-1" *ngIf="taskDetails.category.length > 0">
@@ -79,7 +80,8 @@
                             <div class="col-md-4 mb-1" *ngFor="let cat of taskDetails.category">
                                 <div class="mb-2">
                                     <h6 class="mb-1">{{cat.name}} :</h6>
-                                    <p>{{cat.value}}</p>
+                                    <p *ngIf="cat.type == 'checkbox'"><input type="checkbox" class="form-check-input" disabled [checked]="cat.value"></p>
+                                    <p *ngIf="cat.type != 'checkbox'">{{cat.value}}</p>
                                 </div>
                             </div>
                         </div>

@@ -16,6 +16,8 @@ router.delete('/status/:userId', authController.toggleUserStatus);
 
 router.get('/details/:id', verifyToken, authController.getUserById);
 
+router.get('/details-fAdmin', verifyToken, authController.getUserByIdForAdmin);
+
 router.post('/login', authController.login);
 
 

@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://job-management-backend.onrender.com/',
+  apiUrl: 'https://eagleprint.in/',
   // apiUrl: 'http://eagleprint.in/',
 };

@@ -38,8 +38,8 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h6 class="mb-0">{{authUserData.name}}</h6>
-                                    <small class="text-muted">{{authUserData.role}}</small>
+                                    <h6 class="mb-0">{{authUserData.firstName + " " + authUserData.lastName}}</h6>
+                                    <!-- <small class="text-muted">{{authUserData.role}}</small> -->
                                 </div>
                             </div>
                         </a>
@@ -48,8 +48,8 @@
                         <div class="dropdown-divider my-1"></div>
                     </li> -->
                     <li>
-                        <a class="dropdown-item" routerLink="/admin/auth/stores/profile/{{storeId}}">
-                            <i class="bx bx-user bx-md me-3"></i><span>Store Profile</span>
+                        <a class="dropdown-item" routerLink="/admin/profile">
+                            <i class="bx bx-user bx-md me-3"></i><span>Profile</span>
                         </a>
                     </li>
                     <li>
