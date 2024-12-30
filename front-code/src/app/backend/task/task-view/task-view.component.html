@@ -45,14 +45,14 @@
                     <div class="col-md-4 mb-1" *ngIf="taskDetails.taskPriority">
                         <div class="mb-2">
                             <h6 class="mb-1">Priority :</h6>
-                            <p>{{taskDetails.taskPriority}}</p>
+                            <p class="badge" [ngClass]="taskDetails.taskPriority == 1 ? 'bg-info' : taskDetails.taskPriority == 2 ? 'bg-warning' : 'bg-danger'">{{taskDetails.taskPriority == 1 ? 'Low' : taskDetails.taskPriority == 2 ? 'Medium' : 'High'}}</p>
                         </div>
                     </div>
                     <div class="col-md-4 mb-1" *ngIf="taskDetails.taskStatus">
                         <div class="mb-2">
                             <h6 class="mb-1">Status :</h6>
                             <p class="badge"
-                                [ngClass]="taskDetails.taskStatus == 'Completed' ? 'bg-success' : taskDetails.taskStatus == 'ToDo' ? 'bg-info' : 'bg-warning'">
+                                [ngClass]="taskDetails.taskStatus == 'Completed' ? 'bg-label-success' : taskDetails.taskStatus == 'ToDo' ? 'bg-label-info' : 'bg-label-warning'">
                                 {{taskDetails.taskStatus}}</p>
                         </div>
                     </div>

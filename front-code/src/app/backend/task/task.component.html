@@ -10,18 +10,33 @@
 <div class="card">
     <div class="card-header">
         <div class="d-md-flex align-item-center justify-content-between">
-            <div class="input-search">
+            <div class="input-search mb-3">
                 <app-search-input (searchData)="searchFilter($event)" class="searchInput" />
             </div>
-            <div>
-                <button class="btn btn-primary w-100" routerLink="create">
-                    Add New
-                </button>
+            <div class="row">
+                <div class="col-md-4 col-12 mb-3">
+                    <!-- <label for="flatpickr-start-date" class="form-label">Start Date</label> -->
+                    <input type="text" class="form-control flatpickr-input active" placeholder="Start Date"
+                        id="flatpickr-start-date" readonly="readonly">
+                </div>
+                <div class="col-md-4 col-12 mb-3">
+                    <!-- <label for="flatpickr-end-date" class="form-label">End Date</label> -->
+                    <input type="text" class="form-control flatpickr-input active" placeholder="End Date"
+                        id="flatpickr-end-date" readonly="readonly">
+                </div>
+                <div class="col-md-4 col-12 mb-3">
+                    <button class="btn btn-primary me-2" routerLink="create">
+                        Add New
+                    </button>
+                    <button class="btn btn-primary" (click)="downloadExcel()">
+                        <i class="fa fa-download"></i> &nbsp;
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     <div class="card-body">
         <app-table-dynamic [headers]="headerData" (clickEditIcon)="edit($event)" (clickViewIcon)="view($event)"
-            [tableData]="userList" />
+            [tableData]="taskList" />
     </div>
 </div>

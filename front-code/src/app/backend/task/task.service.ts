@@ -10,9 +10,9 @@ export class TaskService {
 
   taskLists: any[] = [];
 
-  async getTaskList(force: boolean = false) {
+  async getTaskList(force: boolean = false, filter: any) {
     if (this.taskLists.length == 0 || force) {
-      let list = await this.httpService.get('task').toPromise();
+      let list = await this.httpService.post('task/list/all', filter).toPromise();
       this.taskLists = list.data.length > 0 ? list.data : [];
       return this.taskLists;
     }

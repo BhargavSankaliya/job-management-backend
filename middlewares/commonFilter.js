@@ -31,6 +31,7 @@ commonFilter.taskCategory = {
 commonFilter.task = {
     _id: 1,
     counter: 1,
+    assignUserId: 1,
     jobNo: 1,
     partyName: 1,
     jobName: 1,

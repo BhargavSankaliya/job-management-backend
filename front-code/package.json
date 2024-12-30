@@ -37,6 +37,7 @@
     "country-codes-list": "^1.6.11",
     "country-state-city": "^3.2.1",
     "express": "^4.18.2",
+    "file-saver": "^2.0.5",
     "flatpickr": "^4.6.13",
     "intl-tel-input": "^17.0.3",
     "jquery": "^3.7.1",
@@ -54,6 +55,7 @@
     "popper.js": "^1.16.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {

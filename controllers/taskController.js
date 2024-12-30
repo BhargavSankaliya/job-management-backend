@@ -110,6 +110,11 @@ taskController.listTask = async (req, res, next) => {
 
     let query = [
       {
+        $match: {
+          createdAt: { $gte: new Date(req.body.startDate), $lt: new Date(req.body.endDate) },
+        }
+      },
+      {
         $lookup: {
           from: "taskcategories",
           localField: "category.categoryId",
@@ -117,6 +122,7 @@ taskController.listTask = async (req, res, next) => {
           as: "categoryDetails"
         }
       },
+
       {
         $addFields: {
           category: {
@@ -184,13 +190,46 @@ taskController.listTask = async (req, res, next) => {
       },
       {
         $project: { ...commonFilter.task }
-      }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignUserId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      {
+        $unwind: {
+          path: "$userDetails",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $addFields: {
+          userName: {
+            $concat: [
+              "$userDetails.firstName",
+              " ",
+              "$userDetails.lastName"
+            ]
+          }
+        }
+      },
     ]
 
     if (req.query.status) {
       query.push({
         $match: {
           status: req.query.status
+        }
+      })
+    }
+
+    if (req.query.taskStatus) {
+      query.push({
+        $match: {
+          taskStatus: req.query.taskStatus
         }
       })
     }

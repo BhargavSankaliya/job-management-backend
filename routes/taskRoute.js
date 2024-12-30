@@ -13,7 +13,7 @@ router.put("/status/:taskId/:taskStatus", taskController.updateTaskStatus);
 
 router.put("/assign/:taskId/:assignUser", taskController.assignUser);
 
-router.get("", taskController.listTask);
+router.post("/list/all", taskController.listTask);
 
 router.get("/mobile", taskController.mobileTaskList);
 
