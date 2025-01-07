@@ -62,7 +62,7 @@ taskCategoryController.updateTaskCategoryStatus = async (req, res, next) => {
 taskCategoryController.listTaskCategory = async (req, res, next) => {
   try {
 
-    let taskCategoryList = !req.query.status ? await TaskCategory.aggregate([{ $project: commonFilter.taskCategory }]) : await TaskCategory.aggregate([{ $match: { status: req.query.status } }, { $project: commonFilter.taskCategory }]);
+    let taskCategoryList = !req.query.status ? await TaskCategory.aggregate([{ $project: commonFilter.taskCategory }, { $sort: { order: 1 } }]) : await TaskCategory.aggregate([{ $match: { status: req.query.status } }, { $project: commonFilter.taskCategory }, { $sort: { order: 1 } }]);
 
     createResponse(taskCategoryList, 200, "Task Category list get successfully.", res);
   } catch (error) {

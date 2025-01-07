@@ -10,6 +10,12 @@ const TaskCategorySchema = new mongoose.Schema(
             trim: true,
             default: ''
         },
+        order: {
+            type: Number,
+            required: [true, 'Order is requied.'],
+            trim: true,
+            default: 0
+        },
         type: {
             type: String,
             enum: ["checkbox", "text"],

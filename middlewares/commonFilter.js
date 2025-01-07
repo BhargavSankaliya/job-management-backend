@@ -25,6 +25,7 @@ commonFilter.taskCategory = {
     _id: 1,
     name: 1,
     type: 1,
+    order: 1,
     status: 1,
 };
 
@@ -37,6 +38,7 @@ commonFilter.task = {
     jobName: 1,
     size: 1,
     operator: 1,
+    isView: 1,
     transportation: 1,
     taskPriority: 1,
     Note: 1,

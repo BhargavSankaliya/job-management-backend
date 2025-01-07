@@ -17,6 +17,8 @@ router.post("/list/all", taskController.listTask);
 
 router.get("/mobile", taskController.mobileTaskList);
 
+router.get("/updateAll", taskController.updateAll);
+
 router.get('/details/:id', taskController.taskById);
 
 router.get('/details-admin/:id', taskController.taskDetailsByIdForAdmin);
@@ -28,6 +30,10 @@ router.get('/details-user-time/:id', taskController.taskUserTimeListForAdmin);
 router.post('/dashboard-task-count', taskController.taskCountForDashboard);
 
 router.post('/search/:slug', taskController.searchParameter);
+
+router.post('/saveDate', taskController.dateSaveAndUpdate);
+
+router.get('/saveDate', taskController.dateGetUserIdWise);
 
 
 

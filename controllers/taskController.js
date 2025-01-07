@@ -7,6 +7,7 @@ const Menu = require("../models/menuModel.js");
 const TaskModel = require("../models/taskModel.js");
 const taskHistoryModel = require("../models/taskHistoryModel.js");
 const UserModel = require("../models/userModel.js");
+const SearchDateHistoryModel = require("../models/searchDateHistoryModel.js");
 const taskController = {};
 
 taskController.createUpdateTask = async (req, res, next) => {
@@ -50,22 +51,52 @@ taskController.updateTaskStatus = async (req, res, next) => {
 
     const oldTaskStatus = findTask.taskStatus
 
-    if (findTask.taskStatus == 'ToDo' && (taskStatus == 'Progress' || taskStatus == 'Completed')) {
+    if (taskStatus == 'ToDo') {
       findTask.taskStatus = taskStatus;
       await taskHistoryForUpdateStatus(findTask, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`)
     }
-    else if (findTask.taskStatus == 'Progress' && (taskStatus == 'ToDo' || taskStatus == 'Completed')) {
+    else if (taskStatus == 'Progress') {
+      findTask.taskStatus = taskStatus;
+      await taskHistoryForUpdateStatus(findTask, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`)
+    }
+    else if (taskStatus == 'Completed') {
+      findTask.taskStatus = taskStatus;
+      await taskHistoryForUpdateStatus(findTask, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`)
+    }
+    else if (taskStatus == 'Dispatch') {
       findTask.taskStatus = taskStatus;
 
       if (req.files && req.files.completedPicture[0]) {
         findTask.completedPicture = req.files.completedPicture[0].filename
       }
 
+      if (req.body && !!req.body.finalCounter) {
+        findTask.finalCounter = req.body.finalCounter;
+      }
+
+      let findDispatchUser = await UserModel.findOne({ roleId: convertIdToObjectId("676fa3a32a7247290cfaf27b"), status: 'Active', isDeleted: false });
+
+      if (!!findDispatchUser) {
+        await taskHistoryForUpdateStatus(findTask, `Task Assign the user to ${findDispatchUser.firstName} ${findDispatchUser.lastName}`);
+        findTask.assignUserId = convertIdToObjectId(findDispatchUser._id);
+      }
+
       await taskHistoryForUpdateStatus(findTask, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`);
+    }
+    else if (taskStatus == 'Billing') {
+      findTask.taskStatus = taskStatus;
+
+      let findBillingUser = await UserModel.findOne({ roleId: convertIdToObjectId("6776d5592b62064def39592a"), status: 'Active', isDeleted: false });
+
+      if (!!findBillingUser) {
+        await taskHistoryForUpdateStatus(findTask, `Task Assign the user to ${findBillingUser.firstName} ${findBillingUser.lastName}`);
+        findTask.assignUserId = convertIdToObjectId(findBillingUser._id);
+      }
+
+      await taskHistoryForUpdateStatus(findTask, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`)
     }
 
     findTask.save();
-
 
     createResponse(null, 200, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`, res);
   } catch (error) {
@@ -234,6 +265,14 @@ taskController.listTask = async (req, res, next) => {
       })
     }
 
+    if (req.user.roleId.toString() != '675a8a2af2cbc1190871bfa9' && req.user.roleId.toString() != '675a8bc91a9de5a85a0b6be6') {
+      query.push({
+        $match: {
+          assignUserId: convertIdToObjectId(req.user._id)
+        }
+      })
+    }
+
     let taskList = await TaskModel.aggregate(query)
 
     createResponse(taskList, 200, "Task list get successfully.", res);
@@ -248,7 +287,9 @@ taskController.mobileTaskList = async (req, res, next) => {
     let query = [
       {
         $match: {
-          assignUserId: convertIdToObjectId(req.user._id)
+          assignUserId: convertIdToObjectId(req.user._id),
+          isHold: false,
+          isCancel: false
         }
       },
       {
@@ -343,6 +384,24 @@ taskController.mobileTaskList = async (req, res, next) => {
     }
 
     let taskList = await TaskModel.aggregate(query)
+
+    createResponse(taskList, 200, "Task list get successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.updateAll = async (req, res, next) => {
+  try {
+
+    // Update all tasks by setting isHold and isCancel to false
+    const updateResult = await TaskModel.updateMany(
+      {}, // No filter, so all documents will be updated
+      { $set: { isHold: false, isCancel: false } } // Set the required fields
+    );
+
+    // Fetch updated tasks for response (optional)
+    const taskList = await TaskModel.find();
 
     createResponse(taskList, 200, "Task list get successfully.", res);
   } catch (error) {
@@ -822,6 +881,80 @@ taskController.taskCountForDashboard = async (req, res, next) => {
         }
       },
       {
+        $lookup: {
+          from: "taskcategories",
+          localField: "category.categoryId",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+
+      {
+        $addFields: {
+          category: {
+            $map: {
+              input: "$category",
+              as: "cat",
+              in: {
+                $mergeObjects: [
+                  "$$cat",
+                  {
+                    name: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.name"
+                          }
+                        },
+                        0
+                      ]
+                    },
+                    type: {
+                      $arrayElemAt: [
+                        {
+                          $map: {
+                            input: {
+                              $filter: {
+                                input:
+                                  "$categoryDetails",
+                                as: "detail",
+                                cond: {
+                                  $eq: [
+                                    "$$detail._id",
+                                    "$$cat.categoryId"
+                                  ]
+                                }
+                              }
+                            },
+                            as: "matchedDetail",
+                            in: "$$matchedDetail.type"
+                          }
+                        },
+                        0
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
         $unwind: {
           path: "$userDetails",
           preserveNullAndEmptyArrays: true
@@ -844,6 +977,34 @@ taskController.taskCountForDashboard = async (req, res, next) => {
         }
       }
     ]
+
+    if (req.user.roleId.toString() != '675a8a2af2cbc1190871bfa9' && req.user.roleId.toString() != '675a8bc91a9de5a85a0b6be6') {
+      userIdWiseTaskList.push({
+        $match: {
+          assignUserId: convertIdToObjectId(req.user._id)
+        }
+      })
+      todoQuery.push({
+        $match: {
+          assignUserId: convertIdToObjectId(req.user._id)
+        }
+      })
+      progressQuery.push({
+        $match: {
+          assignUserId: convertIdToObjectId(req.user._id)
+        }
+      })
+      completedQuery.push({
+        $match: {
+          assignUserId: convertIdToObjectId(req.user._id)
+        }
+      })
+      allQuery.push({
+        $match: {
+          assignUserId: convertIdToObjectId(req.user._id)
+        }
+      })
+    }
 
     if (!!userId) {
       allQuery.push({ $match: matchUserCondition });
@@ -904,6 +1065,66 @@ taskController.searchParameter = async (req, res, next) => {
     }
 
     createResponse(searchList, 200, "Search list retrieved successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.dateSaveAndUpdate = async (req, res, next) => {
+  try {
+
+    let findData = await SearchDateHistoryModel.findOne({ userId: convertIdToObjectId(req.user._id) });
+
+    if (!findData) {
+      let createDate = await SearchDateHistoryModel.create({
+        userId: req.user._id,
+        startDate: new Date(req.body.startDate),
+        endDate: new Date(req.body.endDate)
+      })
+
+      let Object = {
+        startDate: new Date(createDate.startDate),
+        endDate: new Date(createDate.endDate)
+      }
+
+      return createResponse(Object, 200, "Date retrieved successfully.", res);
+
+    }
+    else {
+      findData.startDate = new Date(req.body.startDate);
+      findData.endDate = new Date(req.body.endDate);
+      findData.save();
+    }
+
+
+    let Object = {
+      startDate: new Date(findData.startDate),
+      endDate: new Date(findData.endDate)
+    }
+
+    createResponse(Object, 200, "Date retrieved successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.dateGetUserIdWise = async (req, res, next) => {
+  try {
+
+    let findData = await SearchDateHistoryModel.findOne({ userId: convertIdToObjectId(req.user._id) });
+
+    if (!!findData) {
+      let Object = {
+        startDate: new Date(findData.startDate),
+        endDate: new Date(findData.endDate)
+      }
+
+      return createResponse(Object, 200, "Date retrieved successfully.", res);
+    }
+    else {
+      return createResponse(null, 200, "Date retrieved successfully.", res);
+    }
+
   } catch (error) {
     errorHandler(error, req, res);
   }

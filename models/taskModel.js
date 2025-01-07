@@ -80,12 +80,32 @@ const taskSchema = new mongoose.Schema(
 
         taskStatus: {
             type: String,
-            enum: ["ToDo", "Progress", "Completed"],
+            enum: ["ToDo", "Progress", "Completed", "Hold", "Dispatch", "Billing", "Cancel"],
             required: [true, 'Task Status is required.'],
             default: 'ToDo'
         },
 
         completedPicture: {
+            type: String,
+            required: false,
+            default: ''
+        },
+        isHold: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        isCancel: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        finalCounter: {
+            type: String,
+            required: false,
+            default: ''
+        },
+        remarks: {
             type: String,
             required: false,
             default: ''
@@ -96,6 +116,12 @@ const taskSchema = new mongoose.Schema(
             enum: ["Active", "Inactive"],
             required: [true, 'Status is required.'],
             default: 'Active'
+        },
+
+        isView: {
+            required: false,
+            type: Boolean,
+            default: false
         },
     },
     { timestamps: true }
