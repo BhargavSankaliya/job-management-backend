@@ -9,7 +9,6 @@ export class DashboardService {
   constructor(public httpService: HttpServiceService) { }
 
   async getCountForTask(data: any) {
-    debugger
     let count: any = await this.httpService.post("task/dashboard-task-count", data).toPromise();
     return count.data
   }

@@ -29,15 +29,16 @@ export class CategoryCreateComponent {
     if (!!check) {
       this.isEdit = true;
       this.categoryId = this.route.snapshot.paramMap.get('categoryId');
-      this.getRoleDetailsById()
+      this.getCategoryDetailsById()
     }
 
   }
 
-  async getRoleDetailsById() {
-    let roleDetails = await this.categoryService.categoryDetailsById(this.categoryId);
-    if (roleDetails.meta.code == 200) {
-      this.categoryCreateForm.patchValue(roleDetails.data);
+  async getCategoryDetailsById() {
+    let categoryDetails = await this.categoryService.categoryDetailsById(this.categoryId);
+    if (categoryDetails.meta.code == 200) {
+      categoryDetails.data.order = categoryDetails.data.order.toString()
+      this.categoryCreateForm.patchValue(categoryDetails.data);
     }
   }
 
@@ -46,6 +47,7 @@ export class CategoryCreateComponent {
     this.categoryCreateForm = this.formBuilder.group({
       name: ['', [Validators.required, noWhitespaceValidator]],
       type: ['', [Validators.required, noWhitespaceValidator]],
+      order: [0, [Validators.required, noWhitespaceValidator]],
     })
   }
 
@@ -58,6 +60,7 @@ export class CategoryCreateComponent {
     let object: any = {
       name: this.categoryCreateForm.value.name,
       type: this.categoryCreateForm.value.type,
+      order: this.categoryCreateForm.value.order,
     }
 
     let createUpdateRole = await this.categoryService.categoryCreate(this.categoryId, object);

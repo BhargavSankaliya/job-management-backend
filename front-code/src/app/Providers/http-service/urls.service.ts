@@ -43,5 +43,7 @@ export function removeSessionData(key: StorageKey) {
 export enum StorageKey {
   LOGINDATA = 'LOGINDATA',
   LOGINDETAILS = 'LOGINDETAILS',
-  TOKEN = 'TOKEN'
+  TOKEN = 'TOKEN',
+  STARTDATE = 'STARTDATE',
+  ENDDATE = 'ENDDATE'
 }

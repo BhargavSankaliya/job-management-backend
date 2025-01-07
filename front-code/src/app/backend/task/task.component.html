@@ -11,22 +11,23 @@
     <div class="card-header">
         <div class="d-md-flex align-item-center justify-content-between">
             <div class="input-search mb-3">
-                <app-search-input (searchData)="searchFilter($event)" class="searchInput" />
+                <input class="form-control" [(ngModel)]="search" (input)="searchFilter()" type="search"
+                    [placeholder]="'Search...'">
             </div>
             <div class="row">
                 <div class="col-md-4 col-12 mb-3">
                     <!-- <label for="flatpickr-start-date" class="form-label">Start Date</label> -->
-                    <input type="text" class="form-control flatpickr-input active" placeholder="Start Date"
-                        id="flatpickr-start-date" readonly="readonly">
+                    <input type="date" class="form-control" (change)="getTaskList(true)" placeholder="Start Date"
+                        [(ngModel)]="dateObject.startDate">
                 </div>
                 <div class="col-md-4 col-12 mb-3">
                     <!-- <label for="flatpickr-end-date" class="form-label">End Date</label> -->
-                    <input type="text" class="form-control flatpickr-input active" placeholder="End Date"
-                        id="flatpickr-end-date" readonly="readonly">
+                    <input type="date" class="form-control" [min]="dateObject.startDate" placeholder="End Date"
+                        (change)="getTaskList(true)" [(ngModel)]="dateObject.endDate">
                 </div>
-                <div class="col-md-4 col-12 mb-3">
-                    <button class="btn btn-primary me-2" routerLink="create">
-                        Add New
+                <div class="col-md-4 col-12 mb-3 d-md-flex gap-2 ">
+                    <button class="btn btn-primary me-1" routerLink="create">
+                        <i class="fa fa-plus"></i> &nbsp; Add
                     </button>
                     <button class="btn btn-primary" (click)="downloadExcel()">
                         <i class="fa fa-download"></i> &nbsp;
@@ -36,7 +37,9 @@
         </div>
     </div>
     <div class="card-body">
-        <app-table-dynamic [headers]="headerData" (clickEditIcon)="edit($event)" (clickViewIcon)="view($event)"
-            [tableData]="taskList" />
+        <app-table-dynamic [headers]="headerData" [currentPage]="p" (clickEditIcon)="edit($event)"
+            [sortableColumns]="[true,true,true,true,true,true,true,true,true,false]"
+            [sortKey]="['jobNo','counter','partyName','jobName','size','operator','date','taskPriority','taskStatus','finalCounter']"
+            (clickViewIcon)="view($event)" [tablePaginationId]="'taskIdData'" [tableData]="taskList" />
     </div>
 </div>

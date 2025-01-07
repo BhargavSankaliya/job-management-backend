@@ -21,6 +21,15 @@ export class TaskService {
     }
   }
 
+  async saveDateInDB(data: any) {
+    let date: any = await this.httpService.post("task/saveDate", data).toPromise();
+    return date.data;
+  }
+  async getDateFromDB() {
+    let date: any = await this.httpService.get("task/saveDate").toPromise();
+    return date.data;
+  }
+
   async taskCreate(id: any, bodyData: any) {
     let taskCreate = await this.httpService.post(id ? 'task?id=' + id : 'task', bodyData).toPromise()
     return taskCreate;

@@ -18,6 +18,10 @@
                     <app-input-text label="Type" placeholder="Enter Type" type="text"
                         [control]="$any(categoryCreateForm.get('type'))" />
                 </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Order" placeholder="Enter Order" type="number"
+                        [control]="$any(categoryCreateForm.get('order'))" />
+                </div>
             </div>
         </form>
     </div>

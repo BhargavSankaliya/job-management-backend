@@ -83,8 +83,20 @@
                         [dropdownData]="userList" [clearable]="false" placeholder="Select User" [isMultiple]="false"
                         label="Assign To"></app-dropdown>
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label for="">&nbsp;</label>
+                    <span>On Hold</span>
+                    <input type="checkbox" [checked]="taskCreateForm.value.isHold" formControlName="isHold"
+                        class="form-check-input p-0 mt-0 ms-2">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="">&nbsp;</label>
+                    <span>Is Cancel</span>
+                    <input type="checkbox" [checked]="taskCreateForm.value.isCancel" formControlName="isCancel"
+                        class="form-check-input p-0 mt-0 ms-2">
+                </div>
             </div>
-            <div class="row mt-4">
+            <div class=" row mt-4">
                 <h4>Category Details</h4>
                 <div class="row">
                     <div class="col-md-4 mb-3" *ngFor="let category of categoryList;let catIndex = index">

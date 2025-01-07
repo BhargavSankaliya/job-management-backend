@@ -18,6 +18,7 @@ export class CategoryComponent {
   headerData: any[] = [
     { key: 'srNo', name: 'SR. NO.' },
     { key: 'name', name: 'NAME' },
+    { key: 'order', name: 'ORDER' },
     { key: 'status', name: 'STATUS' },
     { key: 'action', name: "ACTION" }
   ]
@@ -37,7 +38,7 @@ export class CategoryComponent {
   async getCategoryList(force: boolean) {
     let list = await this.categoryService.categoryList(force);
     if (list.length > 0) {
-      this.allCategoryList = list.map((x, i) => { return { ...x, srNo: i + 1, action: { edit: true, plus: x.status == 'Inactive' ? true : false, minus: x.status != 'Inactive' ? true : false } } })
+      this.allCategoryList = list.map((x, i) => { return { ...x, order: x.order ? x.order : 0, srNo: i + 1, action: { edit: true, plus: x.status == 'Inactive' ? true : false, minus: x.status != 'Inactive' ? true : false } } })
       this.categoryList = this.allCategoryList;
     }
     else {

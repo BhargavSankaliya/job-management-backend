@@ -51,6 +51,16 @@ export class TaskViewComponent implements OnInit {
     this.workingUserTimeList = users
   }
 
+  downloadMyFile(url: any, imageName: any) {
+    const link = document.createElement('a');
+    link.setAttribute('target', '_blank');
+    link.setAttribute('href', url);
+    link.setAttribute('download', imageName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
 }
 
 export interface TaskDetails {
@@ -70,6 +80,7 @@ export interface TaskDetails {
   status: string
   isDeleted: boolean
   createdAt: string
+  finalCounter: string
   updatedAt: string
   deletedAt: string
   __v: number

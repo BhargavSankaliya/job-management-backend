@@ -8,7 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TaskService } from './task.service';
 import moment from 'moment'
 import { DropdownComponent } from 'app/CommonComponent/dropdown/dropdown.component';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -16,7 +16,7 @@ import { saveAs } from 'file-saver';
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [RouterLink, TableDynamicComponent, SearchInputComponent, DropdownComponent],
+  imports: [RouterLink, TableDynamicComponent, FormsModule, ReactiveFormsModule, SearchInputComponent, DropdownComponent],
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss'
 })
@@ -30,6 +30,8 @@ export class TaskComponent implements AfterViewInit {
     { key: 'operator', name: 'OPERATOR' },
     { key: 'date', name: 'DATE' },
     { key: 'taskPriority', name: 'PRIORITY' },
+    { key: 'finalCounter', name: 'FINAL COUNTER' },
+    { key: 'process', name: 'PROCESS' },
     { key: 'taskStatus', name: 'TASK STATUS' },
     { key: 'action', name: "ACTION" }
   ]
@@ -38,82 +40,90 @@ export class TaskComponent implements AfterViewInit {
 
   startDatePicker: any;
   endDatePicker: any;
+  p = 1;
+  search: any = '';
+
+  dateObject = {
+    startDate: moment().startOf('week').format("yyyy-MM-DD"),
+    endDate: moment().endOf('week').format("yyyy-MM-DD")
+  }
 
   constructor(public dialog: MatDialog, public taskService: TaskService, public router: Router) {
-    this.changeDatePicker();
+    this.dateObject = {
+      startDate: moment().startOf('week').format("yyyy-MM-DD"),
+      endDate: moment().endOf('week').format("yyyy-MM-DD")
+    }
+    this.getDate()
   }
 
-  changeDatePicker() {
-    // Initialize the start date picker
-    this.startDatePicker = flatpickr('#flatpickr-start-date', {
-      dateFormat: 'Y-m-d',  // Format as 'DD-MM-YYYY'
-      minDate: moment().toDate(),  // Disable previous dates
-      onChange: (selectedDates, dateStr, instance) => {
-        // Dynamically update the minimum date of the end date picker based on the selected start date
-        if (selectedDates.length > 0) {
-          this.endDatePicker.set('minDate', moment().add(1, 'day').toDate());
+  async getDate() {
 
-        }
-      }
-    });
+    let date = await this.taskService.getDateFromDB();
+    this.dateObject = date;
 
-    // Initialize the end date picker
-    this.endDatePicker = flatpickr('#flatpickr-end-date', {
-      dateFormat: 'Y-m-d',  // Format as 'DD-MM-YYYY'
-      minDate: new Date(),  // Initially disable previous dates (same as start date)
-    });
-  }
-
-  ngOnInit(): void {
     this.getTaskList(false);
   }
 
-  ngAfterViewInit(): void {
-    // Initialize the start date picker
-    this.startDatePicker = flatpickr('#flatpickr-start-date', {
-      defaultDate: moment().startOf('week').toDate(),
-      dateFormat: 'd-m-Y',  // Format as 'DD-MM-YYYY'
-      onChange: (selectedDates, dateStr, instance) => {
-        // Dynamically update the minimum date of the end date picker based on the selected start date
-        if (selectedDates.length > 0) {
-          this.endDatePicker.set('minDate', moment(selectedDates[0]).toDate());
-          this.getTaskList(true)
-        }
-      }
-    });
+  async saveDate(object: any) {
 
-    // Initialize the end date picker
-    this.endDatePicker = flatpickr('#flatpickr-end-date', {
-      defaultDate: moment().endOf('week').toDate(),
-      dateFormat: 'd-m-Y',  // Format as 'DD-MM-YYYY'
-      minDate: new Date(),  // Initially disable previous dates (same as start date)
-      onChange: () => {
-        this.getTaskList(true)
-      }
-    });
+    let date = await this.taskService.saveDateInDB(object);
+    this.dateObject = {
+      startDate: moment(date.startDate).format("yyyy-MM-DD"),
+      endDate: moment(date.endDate).format('yyyy-MM-DD')
+    };
 
   }
 
-  searchFilter(search: any) {
-    this.taskList = this.allTaskList.filter((x) => JSON.stringify(x).toLocaleLowerCase().includes(search.toLocaleLowerCase()));
+  ngOnInit(): void {
+  }
+
+  ngAfterViewInit(): void {
+
+
+  }
+
+  searchFilter() {
+    this.taskList = this.allTaskList.filter((x) => JSON.stringify(x).toLocaleLowerCase().includes(this.search.toLocaleLowerCase()));
   }
 
   async getTaskList(force: boolean) {
-
+    
     let object = {
-      startDate: moment(this.startDatePicker.selectedDates && this.startDatePicker.selectedDates[0] ? moment(this.startDatePicker.selectedDates[0]).startOf('day').toDate() : moment().startOf('week').toDate()).toDate(),
-      endDate: moment(this.endDatePicker.selectedDates && this.endDatePicker.selectedDates[0] ? moment(this.endDatePicker.selectedDates[0]).endOf('day').toDate() : moment().endOf('week').toDate()).toDate(),
+      startDate: moment(this.dateObject.startDate).startOf('day').toDate(),
+      endDate: moment(this.dateObject.endDate).endOf('day').toDate(),
     }
 
-    let list = await this.taskService.getTaskList(force, object);
+    let list: any = await this.taskService.getTaskList(force, object);
     if (list.length > 0) {
-      this.allTaskList = list.map((x, i) => { return { ...x, date: moment(x.createdAt).format("DD/MM/yyyy"), srNo: i + 1, action: { edit: true, view: true }, taskPriority: x.taskPriority == 1 ? 'Low' : x.taskPriority == 2 ? 'Medium' : 'High' } })
+
+
+      this.allTaskList = list.map((x, i) => { return { ...x, date: moment(x.createdAt).format("DD/MM/yyyy"), srNo: i + 1, action: { edit: true, view: true }, process: this.getCategoryString(x.category), taskPriority: x.taskPriority == 1 ? 'Low' : x.taskPriority == 2 ? 'Medium' : 'High' } })
       this.taskList = this.allTaskList;
+
+      this.p = 1;
     }
     else {
       this.taskList = [];
       this.allTaskList = [];
     }
+
+    this.saveDate(this.dateObject)
+
+  }
+
+  getCategoryString(category: any) {
+    let processList: any = '';
+    if (category && category.length > 0) {
+      category.map((x, i) => {
+        if (x.type == 'checkbox') {
+          processList = processList + `<div>${i + 1}. ${x.name}</div>`
+        }
+        else {
+          processList = processList + `<div>${i + 1}. ${x.name} ${x.value ? '- ' + x.value : ''}</div>`
+        }
+      })
+    }
+    return processList
   }
 
   edit(event: any) {

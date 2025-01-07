@@ -1,5 +1,5 @@
 import { NgClass, NgFor, NgIf, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/common';
-import { Component, ElementRef, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
+import { Component, DoCheck, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { PaginationLimitComponent } from '../pagination-limit/pagination-limit.component';
@@ -11,7 +11,7 @@ import { PaginationLimitComponent } from '../pagination-limit/pagination-limit.c
   templateUrl: './table-dynamic.component.html',
   styleUrl: './table-dynamic.component.scss'
 })
-export class TableDynamicComponent {
+export class TableDynamicComponent implements OnInit, OnChanges, DoCheck {
   //header array
   @Input() headers: headersData[] = [];
 
@@ -58,16 +58,19 @@ export class TableDynamicComponent {
     this.headersLength = this.headers.length;
     this.pageSize = 10;
 
-
-
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-
+  ngDoCheck(): void {
+    this.allTableData = this.tableData;
     if (this.tableData.length <= this.pageSize) {
       this.currentPage = 1
     }
+  }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.tableData.length <= this.pageSize) {
+      this.currentPage = 1
+    }
   }
 
   toggle() {

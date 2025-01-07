@@ -13,13 +13,13 @@
             </div>
             <div class="col-md-3 col-12 mb-6">
                 <label for="flatpickr-start-date" class="form-label">Start Date</label>
-                <input type="text" class="form-control flatpickr-input active" formControlName="startDate"
-                    placeholder="DD-MM-YYYY" id="flatpickr-start-date" readonly="readonly">
+                <input type="date" class="form-control" (change)="getCounts()" formControlName="startDate"
+                    placeholder="start date">
             </div>
             <div class="col-md-3 col-12 mb-6">
                 <label for="flatpickr-end-date" class="form-label">End Date</label>
-                <input type="text" class="form-control flatpickr-input active" formControlName="endDate"
-                    placeholder="DD-MM-YYYY" id="flatpickr-end-date" readonly="readonly">
+                <input type="date" class="form-control" (change)="getCounts()" formControlName="endDate"
+                    placeholder="end date">
             </div>
         </div>
     </div>
@@ -63,11 +63,36 @@
         <div class="card">
             <div class="row row-bordered g-0">
                 <div class="col-lg-12">
-                    <div class="card-header d-flex align-items-center justify-content-between">
-                        <div class="card-title mb-0">
-                            <h5 class="m-0 me-2">Task Details</h5>
+                    <div class="card-header">
+                        <div class="card-title mb-4">
+                            <h5 class="m-0 me-2">Task Details :</h5>
                         </div>
-                        <div>
+                        <div class="d-flex align-items-center gap-10">
+                            <div class="input-search">
+                                <label for="">Job No.</label>
+                                <input class="form-control" [(ngModel)]="jobNo" (input)="searchFilter()" type="search"
+                                    [placeholder]="'Search Job No...'">
+                            </div>
+                            <div class="input-search">
+                                <label for="">Username</label>
+                                <input class="form-control" [(ngModel)]="userName" (input)="searchFilter()"
+                                    type="search" [placeholder]="'Search Username...'">
+                            </div>
+                            <div class="input-search">
+                                <label for="">Estimated Counter</label>
+                                <input class="form-control" [(ngModel)]="counter" (input)="searchFilter()" type="search"
+                                    [placeholder]="'Search Estimated Counter...'">
+                            </div>
+                            <div class="input-search">
+                                <label for="">Party Name</label>
+                                <input class="form-control" [(ngModel)]="partyName" (input)="searchFilter()"
+                                    type="search" [placeholder]="'Search Estimated Counter...'">
+                            </div>
+                            <div class="input-search">
+                                <label for="">Job Name</label>
+                                <input class="form-control" [(ngModel)]="jobName" (input)="searchFilter()" type="search"
+                                    [placeholder]="'Search Estimated Counter...'">
+                            </div>
                             <app-dropdown [control]="$any(dashboardForm.get('priority'))" key="name" value="value"
                                 [dropdownData]="priorityList" (dropdownChanged)="getCounts()" [clearable]="true"
                                 placeholder="Select Priority" [isMultiple]="false"
@@ -76,7 +101,9 @@
                     </div>
                 </div>
                 <div class="col-12 p-4">
-                    <app-table-dynamic [headers]="headerData" [tableData]="taskList" />
+                    <app-table-dynamic [headers]="headerData" [tableData]="taskList"
+                        [sortableColumns]="[true,true,true,true,true,true,true,true,true,true,false]"
+                        [sortKey]="['jobNo','userName','counter','partyName','jobName','size','operator','date','taskPriority','taskStatus','finalCounter']" />
                 </div>
             </div>
         </div>

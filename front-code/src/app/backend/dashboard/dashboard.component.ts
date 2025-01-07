@@ -7,6 +7,8 @@ import { NgIf } from '@angular/common';
 import { UserService } from '../users/user.service';
 import { DropdownComponent } from 'app/CommonComponent/dropdown/dropdown.component';
 import { TableDynamicComponent } from 'app/CommonComponent/table-dynamic/table-dynamic.component';
+import { getSessionData, setSessionData, StorageKey } from 'app/Providers/http-service/urls.service';
+import { TaskService } from '../task/task.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,74 +21,93 @@ export class DashboardComponent implements AfterViewInit, OnInit {
 
   startDatePicker: any;
   endDatePicker: any;
-
-  constructor(public fb: FormBuilder, public dashboardService: DashboardService, public userService: UserService) {
-    this.changeDatePicker()
+  jobNo: any = '';
+  userName: any = '';
+  counter: any = '';
+  partyName: any = '';
+  jobName: any = '';
+  dateObject = {
+    startDate: moment().startOf('week').format("yyyy-MM-DD"),
+    endDate: moment().endOf('week').format("yyyy-MM-DD")
   }
 
-  changeDatePicker() {
-    // Initialize the start date picker
-    this.startDatePicker = flatpickr('#flatpickr-start-date', {
-      dateFormat: 'Y-m-d',  // Format as 'DD-MM-YYYY'
-      minDate: moment().toDate(),  // Disable previous dates
-      onChange: (selectedDates, dateStr, instance) => {
-        // Dynamically update the minimum date of the end date picker based on the selected start date
-        if (selectedDates.length > 0) {
-          this.endDatePicker.set('minDate', moment().add(1, 'day').toDate());
+  constructor(public fb: FormBuilder, public dashboardService: DashboardService, public taskService: TaskService, public userService: UserService) {
 
+    this.dateObject = {
+      startDate: moment().startOf('week').format("yyyy-MM-DD"),
+      endDate: moment().endOf('week').format("yyyy-MM-DD")
+    }
+  }
+
+  async getDate() {
+
+    let date = await this.taskService.getDateFromDB();
+    if (date) {
+      this.dateObject = date;
+
+      this.dashboardForm.controls['startDate'].setValue(moment(date.startDate).format("yyyy-MM-DD"));
+      this.dashboardForm.controls['endDate'].setValue(moment(date.endDate).format("yyyy-MM-DD"));
+
+      this.getUserList();
+
+    }
+    else {
+      this.saveDate(this.dateObject);
+      this.getDate()
+    }
+
+  }
+
+  async saveDate(object: any) {
+
+    let date = await this.taskService.saveDateInDB(object);
+
+    this.dashboardForm.controls['startDate'].setValue(moment(date.startDate).format("yyyy-MM-DD"));
+    this.dashboardForm.controls['endDate'].setValue(moment(date.endDate).format("yyyy-MM-DD"));
+
+  }
+
+
+  getCategoryString(category: any) {
+    let processList: any = '';
+    if (category && category.length > 0) {
+      category.map((x, i) => {
+        if (x.type == 'checkbox') {
+          processList = processList + `<div>${i + 1}. ${x.name}</div>`
         }
-      }
-    });
-
-    // Initialize the end date picker
-    this.endDatePicker = flatpickr('#flatpickr-end-date', {
-      dateFormat: 'Y-m-d',  // Format as 'DD-MM-YYYY'
-      minDate: new Date(),  // Initially disable previous dates (same as start date)
-    });
+        else {
+          processList = processList + `<div>${i + 1}. ${x.name} ${x.value ? '- ' + x.value : ''}</div>`
+        }
+      })
+    }
+    return processList
   }
 
   ngAfterViewInit(): void {
-    // Initialize the start date picker
-    this.startDatePicker = flatpickr('#flatpickr-start-date', {
-      defaultDate: moment().startOf('week').toDate(),
-      dateFormat: 'd-m-Y',  // Format as 'DD-MM-YYYY'
-      onChange: (selectedDates, dateStr, instance) => {
-        // Dynamically update the minimum date of the end date picker based on the selected start date
-        if (selectedDates.length > 0) {
-          this.endDatePicker.set('minDate', moment(selectedDates[0]).toDate());
-          this.getCounts()
-        }
-      }
-    });
-
-    // Initialize the end date picker
-    this.endDatePicker = flatpickr('#flatpickr-end-date', {
-      defaultDate: moment().endOf('week').toDate(),
-      dateFormat: 'd-m-Y',  // Format as 'DD-MM-YYYY'
-      minDate: new Date(),  // Initially disable previous dates (same as start date)
-      onChange: () => {
-        this.getCounts()
-      }
-    });
-
   }
 
   ngOnInit(): void {
     this.defaultForm();
-    this.getUserList();
+    this.getDate()
   }
 
   dashboardForm: FormGroup;
   taskCounts: any
   userList: any[] = [];
   taskList: any[] = [];
+  allTaskList: any[] = [];
   headerData: any[] = [
     { key: 'jobNo', name: 'JOB NO.' },
     { key: 'userName', name: 'USERNAME' },
     { key: 'counter', name: 'COUNTER' },
     { key: 'partyName', name: 'PARTY NAME' },
     { key: 'jobName', name: 'JOB NAME' },
+    { key: 'size', name: 'SIZE' },
+    { key: 'operator', name: 'OPERATOR' },
+    { key: 'createdAt', name: 'DATE' },
     { key: 'taskPriority', name: 'PRIORITY' },
+    { key: 'finalCounter', name: 'FINAL COUNTER' },
+    { key: 'process', name: 'PROCESS' },
     { key: 'taskStatus', name: 'STATUS' },
   ]
   priorityList: any[] = [
@@ -119,8 +140,8 @@ export class DashboardComponent implements AfterViewInit, OnInit {
 
   async getCounts() {
     let object = {
-      startDate: moment(this.startDatePicker.selectedDates && this.startDatePicker.selectedDates[0] ? moment(this.startDatePicker.selectedDates[0]).startOf('day').toDate() : moment().startOf('week').toDate()).toDate(),
-      endDate: moment(this.endDatePicker.selectedDates && this.endDatePicker.selectedDates[0] ? moment(this.endDatePicker.selectedDates[0]).endOf('day').toDate() : moment().endOf('week').toDate()).toDate(),
+      startDate: moment(this.dashboardForm.value.startDate).startOf('day').toDate(),
+      endDate: moment(this.dashboardForm.value.endDate).endOf('day').toDate(),
       userId: this.dashboardForm.value.userId,
       taskStatus: this.dashboardForm.value.status,
       taskPriority: this.dashboardForm.value.priority,
@@ -130,10 +151,46 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     this.taskCounts = count;
     if (count.taskListByUserId.length > 0) {
       count.taskListByUserId.map((x) => {
-        x.taskPriority = x.taskPriority == 1 ? 'Low' : x.taskPriority == 2 ? 'Medium' : "High"
+        x.createdAt = moment(x.createdAt).format("DD-MM-yyyy");
+        x.taskPriority = x.taskPriority == 1 ? 'Low' : x.taskPriority == 2 ? 'Medium' : "High";
+        x.process = this.getCategoryString(x.category);
       })
     }
-    this.taskList = count.taskListByUserId
+    this.taskList = count.taskListByUserId;
+    this.allTaskList = this.taskList;
+    this.saveDate({
+      startDate: object.startDate,
+      endDate: object.endDate
+    })
+
+
+  }
+
+  searchFilter() {
+    let tempTaskAllList = JSON.parse(JSON.stringify(this.allTaskList));
+
+    if (this.jobNo) {
+      tempTaskAllList = tempTaskAllList.filter((x) => x.jobNo.includes(this.jobNo))
+    }
+
+    if (this.userName) {
+      tempTaskAllList = tempTaskAllList.filter((x) => x.userName.toLocaleLowerCase().includes(this.userName.toLocaleLowerCase()))
+    }
+
+    if (this.counter) {
+      tempTaskAllList = tempTaskAllList.filter((x) => x.counter.toLocaleLowerCase().includes(this.counter.toLocaleLowerCase()))
+    }
+
+    if (this.partyName) {
+      tempTaskAllList = tempTaskAllList.filter((x) => x.partyName.toLocaleLowerCase().includes(this.partyName.toLocaleLowerCase()))
+    }
+
+    if (this.jobName) {
+      tempTaskAllList = tempTaskAllList.filter((x) => x.jobName.toLocaleLowerCase().includes(this.jobName.toLocaleLowerCase()))
+    }
+
+    this.taskList = tempTaskAllList
+
   }
 
 }

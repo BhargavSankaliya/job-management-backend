@@ -32,7 +32,6 @@ export class UserCreateComponent {
 
   ngOnInit(): void {
     this.defaultForm();
-    debugger
     this.getRoleList(false);
     let check: any = this.route.snapshot.paramMap.get('userId');
     if (!!check) {

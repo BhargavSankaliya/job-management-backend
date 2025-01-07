@@ -14,6 +14,7 @@ export class CategoryService {
   }
 
   categoryLists: any[] = [];
+  activecategoryLists: any[] = [];
 
   async categoryList(force: boolean = false) {
     if (this.categoryLists.length == 0 || force) {
@@ -23,6 +24,17 @@ export class CategoryService {
     }
     else {
       return this.categoryLists;
+    }
+  }
+
+  async activeCategoryList(force: boolean = false) {
+    if (this.activecategoryLists.length == 0 || force) {
+      let list = await this.httpService.get('task-category?status=Active').toPromise();
+      this.activecategoryLists = list.data.length > 0 ? list.data : [];
+      return this.activecategoryLists;
+    }
+    else {
+      return this.activecategoryLists;
     }
   }
 

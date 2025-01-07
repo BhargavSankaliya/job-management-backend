@@ -228,11 +228,18 @@
         li {
             color: black;
             background: #fff;
-            padding: 5px 15px;
             border-radius: 5px;
             font-size: 14px;
             cursor: pointer;
             border: 1px solid #e1e1e1;
+
+            &.disabled {
+                padding: 5px 15px;
+            }
+
+            a {
+                padding: 5px 15px;
+            }
 
             &:first-child {
                 margin: 0;
@@ -262,6 +269,7 @@
 
             &.current {
                 color: #fff;
+                padding: 5px 15px;
                 background: var(--secondary, #1B2123);
             }
         }

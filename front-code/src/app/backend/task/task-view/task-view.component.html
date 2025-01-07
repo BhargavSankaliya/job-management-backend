@@ -45,14 +45,17 @@
                     <div class="col-md-4 mb-1" *ngIf="taskDetails.taskPriority">
                         <div class="mb-2">
                             <h6 class="mb-1">Priority :</h6>
-                            <p class="badge" [ngClass]="taskDetails.taskPriority == 1 ? 'bg-info' : taskDetails.taskPriority == 2 ? 'bg-warning' : 'bg-danger'">{{taskDetails.taskPriority == 1 ? 'Low' : taskDetails.taskPriority == 2 ? 'Medium' : 'High'}}</p>
+                            <p class="badge"
+                                [ngClass]="taskDetails.taskPriority == 1 ? 'bg-info' : taskDetails.taskPriority == 2 ? 'bg-warning' : 'bg-danger'">
+                                {{taskDetails.taskPriority == 1 ? 'Low' : taskDetails.taskPriority == 2 ? 'Medium' :
+                                'High'}}</p>
                         </div>
                     </div>
                     <div class="col-md-4 mb-1" *ngIf="taskDetails.taskStatus">
                         <div class="mb-2">
                             <h6 class="mb-1">Status :</h6>
                             <p class="badge"
-                                [ngClass]="taskDetails.taskStatus == 'Completed' ? 'bg-label-success' : taskDetails.taskStatus == 'ToDo' ? 'bg-label-info' : 'bg-label-warning'">
+                                [ngClass]="taskDetails.taskStatus == 'Completed' ? 'bg-label-success' : taskDetails.taskStatus == 'ToDo' ? 'bg-label-info' : taskDetails.taskStatus == 'Progress' ? 'bg-label-warning' : taskDetails.taskStatus == 'Hold' ? 'bg-label-danger' : 'bg-label-dark'">
                                 {{taskDetails.taskStatus}}</p>
                         </div>
                     </div>
@@ -68,20 +71,36 @@
                             <p>{{taskDetails.createdAt | date : 'dd/MM/yyyy'}}</p>
                         </div>
                     </div>
+                    <div class="col-md-4 mb-1" *ngIf="taskDetails.finalCounter">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Final Counter :</h6>
+                            <p>{{taskDetails.finalCounter}}</p>
+                        </div>
+                    </div>
                     <div class="col-md-4 mb-1" *ngIf="taskDetails.completedPicture">
                         <div class="mb-2">
                             <h6 class="mb-1">Completed Images :</h6>
-                            <img [src]="environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture"
-                                class="rounded" width="100" alt="">
+                            <a
+                                (click)="downloadMyFile(environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture,taskDetails.completedPicture)">
+                                <img [src]="environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture"
+                                    class="rounded" width="100" alt="">
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-12 mb-1" *ngIf="taskDetails.category.length > 0">
                         <div class="row">
-                            <div class="col-md-4 mb-1" *ngFor="let cat of taskDetails.category">
+                            <h5>Process</h5>
+                            <div class="mb-1" *ngFor="let cat of taskDetails.category">
                                 <div class="mb-2">
-                                    <h6 class="mb-1">{{cat.name}} :</h6>
-                                    <p *ngIf="cat.type == 'checkbox'"><input type="checkbox" class="form-check-input" disabled [checked]="cat.value"></p>
-                                    <p *ngIf="cat.type != 'checkbox'">{{cat.value}}</p>
+                                    <h6 class="mb-1">{{cat.name}} : &nbsp;
+                                        <span *ngIf="cat.type == 'checkbox'">
+                                            <input type="checkbox" class="form-check-input" disabled
+                                                [checked]="cat.value">
+                                        </span>
+                                        <span *ngIf="cat.type != 'checkbox'">
+                                            {{cat.value}}
+                                        </span>
+                                    </h6>
                                 </div>
                             </div>
                         </div>

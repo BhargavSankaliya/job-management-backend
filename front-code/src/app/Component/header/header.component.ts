@@ -26,7 +26,6 @@ export class HeaderComponent implements OnInit {
   }
 
   addShowClass() {
-    debugger
     let id = document.getElementById("add-show-class");
     id?.classList.add("show")
   }

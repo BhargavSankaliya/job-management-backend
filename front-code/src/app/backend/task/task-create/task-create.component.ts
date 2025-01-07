@@ -99,13 +99,15 @@ export class TaskCreateComponent {
   }
 
   async getCategoryList(force: boolean) {
-    let categories: any[] = await this.categoryService.categoryList(force);
+    let categories: any[] = await this.categoryService.activeCategoryList(force);
     categories.map((x) => {
-      if (x.type == 'checkbox') {
-        x.isChecked = false
-      }
-      else {
-        x.value = ''
+      if (x.status == 'Active') {
+        if (x.type == 'checkbox') {
+          x.isChecked = false
+        }
+        else {
+          x.value = ''
+        }
       }
     })
 
@@ -155,6 +157,8 @@ export class TaskCreateComponent {
       operator: [''],
       transportation: [''],
       Note: [''],
+      isHold: [false],
+      isCancel: [false],
       assignUserId: [null, [Validators.required]]
     })
   }
@@ -193,6 +197,8 @@ export class TaskCreateComponent {
       operator: this.taskCreateForm.value.operator,
       transportation: this.taskCreateForm.value.transportation,
       Note: this.taskCreateForm.value.Note,
+      isHold: this.taskCreateForm.value.isHold,
+      isCancel: this.taskCreateForm.value.isCancel,
       assignUserId: this.taskCreateForm.value.assignUserId,
       category: selectedCategory.length > 0 ? selectedCategory : []
     }
