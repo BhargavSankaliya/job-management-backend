@@ -12,8 +12,18 @@ const taskController = {};
 
 taskController.createUpdateTask = async (req, res, next) => {
   try {
+    if (JSON.parse(req.body.category).length > 0) {
+      req.body.category = JSON.parse(req.body.category);
+    }
 
+    if (req.files && req.files.initialImage[0]) {
+      req.body.initialImage = req.files.initialImage[0].filename
+    }
+    else {
+      req.body.initialImage = ""
+    }
     if (req.query.id) {
+
 
       let update = await TaskModel.findOneAndUpdate({ _id: convertIdToObjectId(req.query.id) }, req.body);
 
@@ -61,6 +71,15 @@ taskController.updateTaskStatus = async (req, res, next) => {
     }
     else if (taskStatus == 'Completed') {
       findTask.taskStatus = taskStatus;
+
+      if (req.files && req.files.billingPicture[0]) {
+        findTask.billingPicture = req.files.billingPicture[0].filename
+      }
+
+      if (req.body && !!req.body.remarks) {
+        findTask.remarks = req.body.remarks;
+      }
+
       await taskHistoryForUpdateStatus(findTask, `Task Status updated from ${oldTaskStatus} to ${findTask.taskStatus} successfully.`)
     }
     else if (taskStatus == 'Dispatch') {

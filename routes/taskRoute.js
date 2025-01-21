@@ -7,7 +7,7 @@ const { taskController } = require('../controllers/taskController');
 
 
 
-router.post("", validateSchema(TaskModel), taskController.createUpdateTask);
+router.post("", taskController.createUpdateTask);
 
 router.put("/status/:taskId/:taskStatus", taskController.updateTaskStatus);
 

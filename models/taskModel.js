@@ -90,6 +90,16 @@ const taskSchema = new mongoose.Schema(
             required: false,
             default: ''
         },
+        billingPicture: {
+            type: String,
+            required: false,
+            default: ''
+        },
+        initialImage: {
+            type: String,
+            required: false,
+            default: ''
+        },
         isHold: {
             type: Boolean,
             required: false,

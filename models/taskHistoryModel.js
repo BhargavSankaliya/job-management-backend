@@ -10,7 +10,7 @@ const taskHistorySchema = new mongoose.Schema(
         },
         taskStatus: {
             type: String,
-            enum: ["ToDo", "Progress", "Completed"],
+            enum: ["ToDo", "Progress", "Completed", "Hold", "Dispatch", "Billing", "Cancel"],
             required: [true, 'Task Status is required.'],
         },
         startTime: {

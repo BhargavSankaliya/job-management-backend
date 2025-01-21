@@ -116,7 +116,7 @@ authController.getUserByIdForAdmin = async (req, res, next) => {
     }
 
     const role = await Role.findById(user.roleId);
-    createResponse({...user._doc,roleDetails : role}, 200, "User retrieved successfully.", res);
+    createResponse({ ...user._doc, roleDetails: role }, 200, "User retrieved successfully.", res);
   } catch (error) {
     errorHandler(error, req, res);
   }
@@ -140,10 +140,17 @@ authController.login = async (req, res, next) => {
       expiresIn: "365d",
     });
 
+
     user.token = token;
     user.save()
 
-    createResponse(user, 200, "User retrieved successfully.", res);
+    let is_admin = false
+
+    if (user.roleId.toString() == '675a8bc91a9de5a85a0b6be6' || user.roleId.toString() == '675a8a2af2cbc1190871bfa9') {
+      is_admin = true
+    }
+
+    createResponse({ ...user._doc, is_admin }, 200, "User retrieved successfully.", res);
   } catch (error) {
     errorHandler(error, req, res);
   }

@@ -32,6 +32,12 @@ const storage = multer.diskStorage({
     if (file.fieldname === "completedPicture") {
       dirPath = "uploads/completedPicture";
     }
+    if (file.fieldname === "billingPicture") {
+      dirPath = "uploads/billingPicture";
+    }
+    if (file.fieldname === "initialImage") {
+      dirPath = "uploads/initialImage";
+    }
 
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
@@ -50,6 +56,8 @@ const upload = multer({ storage: storage });
 const cpUpload = upload.fields([
   { name: "profilePicture", maxCount: 1 },
   { name: "completedPicture", maxCount: 1 },
+  { name: "billingPicture", maxCount: 1 },
+  { name: "initialImage", maxCount: 1 },
 ]);
 
 // Serve static files
