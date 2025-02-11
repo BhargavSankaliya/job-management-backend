@@ -34,18 +34,26 @@ commonFilter.task = {
     counter: 1,
     assignUserId: 1,
     jobNo: 1,
+    taskPriority: 1,
     partyName: 1,
     jobName: 1,
     size: 1,
     operator: 1,
     isView: 1,
     transportation: 1,
-    taskPriority: 1,
     Note: 1,
     category: 1,
     taskStatus: 1,
     status: 1,
-    createdAt: 1
+    createdAt: 1,
+    completedPicture: 1,
+    billingPicture: 1,
+    initialImage: 1,
+    isHold: 1,
+    isCancel: 1,
+    finalCounter: 1,
+    remarks: 1,
+    status: 1,
 };
 
 commonFilter.user = {
