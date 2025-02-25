@@ -1,0 +1,50 @@
+<div class="modal fade show d-block" id="modalCenter">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCenterTitle">Complete Task</h5>
+                <button type="button" class="btn-close" (click)="dialogRef.close()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row" [formGroup]="completeForm">
+                    <div class="col-12 mb-3">
+                        <label for="">Remark</label>
+                        <br>
+                        <textarea name="" class="form-control" rows="5" placeholder="Remark"></textarea>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label for="" class="form-label">Upload File (Image / PDF)</label>
+                        <br>
+                        <input type="file" accept="image/jpeg,image/png,image/gif,application/pdf" #fileInput
+                            (change)="selectFile($event)" hidden />
+                        <button type="button" class="btn btn-primary" (click)="fileInput.click()">Select File</button>
+
+                        <!-- Image Preview -->
+                        <div *ngIf="imagePreview" class="image-preview-container mt-4">
+                            <img [src]="imagePreview" height="100" width="100" alt="Selected Image" />
+                        </div>
+
+                        <!-- PDF Preview -->
+                        <div *ngIf="pdfFileName" class="pdf-preview-container mt-4">
+                            <p>📄 {{ pdfFileName }}</p>
+                            <a [href]="pdfPreview" target="_blank" class="btn btn-link">View PDF</a>
+                        </div>
+
+                        <button type="button" class="btn btn-outline-primary mt-4" *ngIf="selectedFile"
+                            (click)="clearFile()" [disabled]="!selectedFile">
+                            Remove File
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" (click)="dialogRef.close()" class="btn btn-outline-secondary">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" (click)="completeTask()">Complete</button>
+            </div>
+        </div>
+    </div>
+</div>

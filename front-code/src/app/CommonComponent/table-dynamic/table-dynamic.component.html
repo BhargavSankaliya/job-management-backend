@@ -75,6 +75,15 @@
                                     </span>
                                     <!-- Delete icon end -->
 
+                                    <!-- Download icon start -->
+                                    <span (click)="selectDownload(column._id)"
+                                        *ngSwitchCase="column.action && column.action.download">
+                                        <i class="menu-icon tf-icons bx bx-download" [matTooltip]="'Active'"></i>
+                                        <!-- <img src="../../../assets/delete-icon.svg" alt="delete"
+                                            [matTooltip]="'Inactive'" title="Download" /> -->
+                                    </span>
+                                    <!-- Download icon end -->
+
                                 </div>
 
                             </span>
@@ -96,6 +105,12 @@
                                 </span>
                                 <span *ngSwitchCase="column.taskStatus == 'Progress'">
                                     <span class="badge bg-label-warning"> {{column.taskStatus}} </span>
+                                </span>
+                                <span *ngSwitchCase="column.taskStatus == 'Dispatch'">
+                                    <span class="badge bg-label-primary"> {{column.taskStatus}} </span>
+                                </span>
+                                <span *ngSwitchCase="column.taskStatus == 'Billing'">
+                                    <span class="badge bg-label-dark"> {{column.taskStatus}} </span>
                                 </span>
                                 <span *ngSwitchCase="column.taskStatus == 'Completed'">
                                     <span class="badge bg-label-success"> {{column.taskStatus}} </span>
@@ -134,7 +149,7 @@
                             {{pageSize * (currentPage - 1) + pageSize < tableData.length ? pageSize * (currentPage - 1)
                                 + pageSize : tableData.length }} of {{ tableData.length }} </p>
                                 <pagination-controls class="m-0 p-0" [id]="tablePaginationId"
-                                    (pageChange)="currentPage = $event" previousLabel="Previous"
+                                    (pageChange)="currentPage = $event;pageChange()" previousLabel="Previous"
                                     nextLabel="Next"></pagination-controls>
                                 <div class="d-flex align-items-center gap-2 selectedRow">
                                     <p class="m-0">Limit</p>

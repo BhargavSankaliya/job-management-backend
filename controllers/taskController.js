@@ -8,6 +8,8 @@ const TaskModel = require("../models/taskModel.js");
 const taskHistoryModel = require("../models/taskHistoryModel.js");
 const UserModel = require("../models/userModel.js");
 const SearchDateHistoryModel = require("../models/searchDateHistoryModel.js");
+const moment = require("moment");
+const JobCounter = require("../models/jobCounterModel.js");
 const taskController = {};
 
 taskController.createUpdateTask = async (req, res, next) => {
@@ -16,14 +18,15 @@ taskController.createUpdateTask = async (req, res, next) => {
       req.body.category = JSON.parse(req.body.category);
     }
 
-    if (req.files && req.files.initialImage[0]) {
+    if (req.files && req.files.initialImage && req.files.initialImage[0]) {
       req.body.initialImage = req.files.initialImage[0].filename
     }
-    else {
-      req.body.initialImage = ""
-    }
-    if (req.query.id) {
 
+    if (req.body.appEstimatedDate) {
+      req.body.appEstimatedDate = new Date(req.body.appEstimatedDate)
+    }
+
+    if (req.query.id) {
 
       let update = await TaskModel.findOneAndUpdate({ _id: convertIdToObjectId(req.query.id) }, req.body);
 
@@ -423,6 +426,21 @@ taskController.updateAll = async (req, res, next) => {
     const taskList = await TaskModel.find();
 
     createResponse(taskList, 200, "Task list get successfully.", res);
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
+taskController.latestTaskNumber = async (req, res, next) => {
+  try {
+
+    let month = moment().format("yyyy-MM");
+
+    let findTaskNumberOfCurrentMonth = await JobCounter.findOne({ month });
+
+    let resultOfMonth = findTaskNumberOfCurrentMonth.counter + 1;
+
+    createResponse(resultOfMonth, 200, "Task Counter successfully.", res);
   } catch (error) {
     errorHandler(error, req, res);
   }
@@ -1071,6 +1089,17 @@ taskController.searchParameter = async (req, res, next) => {
       {
         $project: {
           [slug]: `$${slug}`,
+          _id: 0,
+        },
+      },
+      {
+        $group: {
+          _id: `$${slug}`
+        }
+      },
+      {
+        $project: {
+          [slug]: "$_id",
           _id: 0,
         },
       },

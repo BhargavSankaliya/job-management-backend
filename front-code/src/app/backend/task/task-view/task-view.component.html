@@ -3,7 +3,12 @@
         <div class="d-flex align-items-center justify-content-between ">
             <h5 class="mb-0">Task Details</h5>
             <div class="d-md-flex gap-2">
-                <button class="btn btn-primary" (click)="location.back()">Back</button>
+                <button class="btn btn-primary" *ngIf="loginUserDetails?.roleId == '676fa3a32a7247290cfaf27b'"
+                    (click)="updateTaskStatusOfBilling()">Billing</button>
+                <button class="btn btn-primary"
+                    *ngIf="loginUserDetails?.roleId == '6776d5592b62064def39592a' && taskDetails.taskStatus == 'Billing'"
+                    (click)="updateStatusOfCompleted()">Completed</button>
+                <button class="btn btn-outline-primary" (click)="location.back()">Back</button>
             </div>
         </div>
     </div>
@@ -77,12 +82,44 @@
                             <p>{{taskDetails.finalCounter}}</p>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-1" *ngIf="taskDetails.completedPicture">
+                    <div class="col-md-4 mb-1" *ngIf="taskDetails.initialImage">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Initial Images :</h6>
+                            <a
+                                (click)="downloadMyFile(environmentBaseUrl + 'uploads/initialImage/' + taskDetails.initialImage,taskDetails.initialImage)">
+                                <img [src]="environmentBaseUrl + 'uploads/initialImage/' + taskDetails.initialImage"
+                                    class="rounded" width="100" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1"
+                        *ngIf="taskDetails.completedPicture && !taskDetails.completedPicture.includes('pdf')">
                         <div class="mb-2">
                             <h6 class="mb-1">Completed Images :</h6>
                             <a
                                 (click)="downloadMyFile(environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture,taskDetails.completedPicture)">
                                 <img [src]="environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture"
+                                    class="rounded" width="100" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1"
+                        *ngIf="taskDetails.completedPicture && taskDetails.completedPicture.includes('pdf')">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Completed Images :</h6>
+                            <a>
+                                <p>📄 {{ taskDetails.completedPicture }}</p>
+                                <a (click)="downloadMyFile(environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture,taskDetails.completedPicture)"
+                                    target="_blank" class="btn btn-link">View PDF</a>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1" *ngIf="taskDetails.billingPicture">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Completed Images :</h6>
+                            <a
+                                (click)="downloadMyFile(environmentBaseUrl + 'uploads/billingPicture/' + taskDetails.billingPicture,taskDetails.billingPicture)">
+                                <img [src]="environmentBaseUrl + 'uploads/billingPicture/' + taskDetails.billingPicture"
                                     class="rounded" width="100" alt="">
                             </a>
                         </div>

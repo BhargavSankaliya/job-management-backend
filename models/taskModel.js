@@ -76,6 +76,16 @@ const taskSchema = new mongoose.Schema(
             required: false,
         },
 
+        appEstimatedDate: {
+            type: Date,
+            required: false,
+        },
+
+        appEstimatedTime: {
+            type: String,
+            required: false,
+        },
+
         category: [categorySchema],
 
         taskStatus: {

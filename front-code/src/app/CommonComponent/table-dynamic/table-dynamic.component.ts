@@ -3,6 +3,7 @@ import { Component, DoCheck, ElementRef, EventEmitter, Input, OnChanges, OnInit,
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { PaginationLimitComponent } from '../pagination-limit/pagination-limit.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-table-dynamic',
@@ -44,6 +45,8 @@ export class TableDynamicComponent implements OnInit, OnChanges, DoCheck {
 
   @Output() clickdeleteIcon = new EventEmitter<any>();
 
+  @Output() clickDownloadIcon = new EventEmitter<any>();
+
   @Output() clickEditIcon = new EventEmitter<any>();
 
 
@@ -51,26 +54,44 @@ export class TableDynamicComponent implements OnInit, OnChanges, DoCheck {
   isDropdownOpen: boolean[] = [];
 
 
-  constructor(private elementRef: ElementRef) { }
+  constructor(private elementRef: ElementRef, public router: Router, public route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.allTableData = this.tableData;
     this.headersLength = this.headers.length;
     this.pageSize = 10;
 
+    this.route.queryParams.subscribe(params => {
+      if (params['page']) {
+        this.currentPage = +params['page']; // Convert to number
+      }
+    });
+
   }
 
   ngDoCheck(): void {
     this.allTableData = this.tableData;
     if (this.tableData.length <= this.pageSize) {
-      this.currentPage = 1
+      this.currentPage = 1;
+      // this.pageChange()
     }
+
+    this.route.queryParams.subscribe(params => {
+      if (params['page']) {
+        this.currentPage = +params['page']; // Convert to number
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.tableData.length <= this.pageSize) {
       this.currentPage = 1
     }
+    this.route.queryParams.subscribe(params => {
+      if (params['page']) {
+        this.currentPage = +params['page']; // Convert to number
+      }
+    });
   }
 
   toggle() {
@@ -109,6 +130,10 @@ export class TableDynamicComponent implements OnInit, OnChanges, DoCheck {
     this.clickdeleteIcon.emit(index)
   }
 
+  selectDownload(index: any) {
+    this.clickDownloadIcon.emit(index)
+  }
+
   @Input() currentPage: number = 1;
   pageSize: number = 0;
 
@@ -144,6 +169,13 @@ export class TableDynamicComponent implements OnInit, OnChanges, DoCheck {
       });
     }
 
+  }
+
+  pageChange() {
+    this.router.navigate([], {
+      queryParams: { page: this.currentPage },
+      queryParamsHandling: 'merge' // Keep other query parameters
+    });
   }
 
 }

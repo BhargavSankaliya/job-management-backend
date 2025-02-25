@@ -17,8 +17,8 @@ export class InterceptorService implements HttpInterceptor {
   count = 0;
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    
-    if (req.url.includes('notification/getNotification')) {
+
+    if (req.url.includes('notification/getNotification') || req.url.includes("task/search")) {
       return next.handle(req)
     }
     else {

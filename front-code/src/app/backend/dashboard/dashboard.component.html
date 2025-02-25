@@ -101,7 +101,7 @@
                     </div>
                 </div>
                 <div class="col-12 p-4">
-                    <app-table-dynamic [headers]="headerData" [tableData]="taskList"
+                    <app-table-dynamic [headers]="headerData" [tableData]="taskList" (clickViewIcon)="view($event)"
                         [sortableColumns]="[true,true,true,true,true,true,true,true,true,true,false]"
                         [sortKey]="['jobNo','userName','counter','partyName','jobName','size','operator','date','taskPriority','taskStatus','finalCounter']" />
                 </div>

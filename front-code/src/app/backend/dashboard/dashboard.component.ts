@@ -9,6 +9,7 @@ import { DropdownComponent } from 'app/CommonComponent/dropdown/dropdown.compone
 import { TableDynamicComponent } from 'app/CommonComponent/table-dynamic/table-dynamic.component';
 import { getSessionData, setSessionData, StorageKey } from 'app/Providers/http-service/urls.service';
 import { TaskService } from '../task/task.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,7 +32,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     endDate: moment().endOf('week').format("yyyy-MM-DD")
   }
 
-  constructor(public fb: FormBuilder, public dashboardService: DashboardService, public taskService: TaskService, public userService: UserService) {
+  constructor(public fb: FormBuilder, public router: Router, public dashboardService: DashboardService, public taskService: TaskService, public userService: UserService) {
 
     this.dateObject = {
       startDate: moment().startOf('week').format("yyyy-MM-DD"),
@@ -88,7 +89,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
 
   ngOnInit(): void {
     this.defaultForm();
-    this.getDate()
+    this.getDate();
   }
 
   dashboardForm: FormGroup;
@@ -109,6 +110,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     { key: 'finalCounter', name: 'FINAL COUNTER' },
     { key: 'process', name: 'PROCESS' },
     { key: 'taskStatus', name: 'STATUS' },
+    { key: 'action', name: 'ACTION' },
   ]
   priorityList: any[] = [
     { name: "Low", value: 1 },
@@ -118,6 +120,8 @@ export class DashboardComponent implements AfterViewInit, OnInit {
   taskStatus: any[] = [
     { name: "ToDo", value: 'ToDo' },
     { name: "Progress", value: 'Progress' },
+    { name: "Dispatch", value: 'Dispatch' },
+    { name: "Billing", value: 'Billing' },
     { name: "Completed", value: 'Completed' },
   ]
 
@@ -154,6 +158,9 @@ export class DashboardComponent implements AfterViewInit, OnInit {
         x.createdAt = moment(x.createdAt).format("DD-MM-yyyy");
         x.taskPriority = x.taskPriority == 1 ? 'Low' : x.taskPriority == 2 ? 'Medium' : "High";
         x.process = this.getCategoryString(x.category);
+        x.action = {
+          view: true
+        }
       })
     }
     this.taskList = count.taskListByUserId;
@@ -164,6 +171,10 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     })
 
 
+  }
+
+  view(event: any) {
+    this.router.navigateByUrl("/admin/task/list/view/" + event)
   }
 
   searchFilter() {

@@ -11,6 +11,8 @@ import { DropdownComponent } from 'app/CommonComponent/dropdown/dropdown.compone
 import { UserService } from 'app/backend/users/user.service';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { environment } from 'environments/environment';
+import moment from 'moment';
 
 @Component({
   selector: 'app-task-create',
@@ -35,6 +37,8 @@ export class TaskCreateComponent {
   sizeList: any[] = [];
   operatorList: any[] = [];
   transportationList: any[] = [];
+  latestCounter: Number = 0;
+
   constructor(public location: Location, public userService: UserService, public router: Router, public categoryService: CategoryService, public taskService: TaskService, public route: ActivatedRoute, public formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
@@ -48,7 +52,14 @@ export class TaskCreateComponent {
       this.taskId = this.route.snapshot.paramMap.get('taskId');
       this.getTaskDetailsById()
     }
+    else {
+      this.fetchCounter()
+    }
+  }
 
+  async fetchCounter() {
+    let counter = await this.taskService.latestCounter();
+    this.latestCounter = counter;
   }
 
   ngAfterViewInit(): void {
@@ -129,6 +140,15 @@ export class TaskCreateComponent {
       // taskDetails.data.taskPriority = taskDetails.data.taskPriority.toString();
       this.taskCreateForm.patchValue(taskDetails.data);
 
+      this.imagePreview = taskDetails.data.initialImage ? environment.apiUrl + 'uploads/initialImage/' + taskDetails.data.initialImage : '';
+      this.selectedFile = taskDetails.data.initialImage ? taskDetails.data.initialImage : "";
+      this.latestCounter = taskDetails.data.jobNo;
+      if (!!taskDetails.data.appEstimatedDate) {
+        console.log(new Date(taskDetails.data.appEstimatedDate));
+
+        this.taskCreateForm.controls["appEstimatedDate"].setValue(moment(taskDetails.data.appEstimatedDate).format("yyyy-MM-DD"));
+      }
+
       if (taskDetails.data.category && taskDetails.data.category.length > 0) {
         taskDetails.data.category.map((x) => {
           let findCategory = this.categoryList.findIndex((y) => y._id == x.categoryId);
@@ -146,7 +166,6 @@ export class TaskCreateComponent {
     }
   }
 
-
   defaultForm() {
     this.taskCreateForm = this.formBuilder.group({
       counter: ['', [Validators.required, noWhitespaceValidator]],
@@ -159,6 +178,8 @@ export class TaskCreateComponent {
       Note: [''],
       isHold: [false],
       isCancel: [false],
+      appEstimatedDate: [null],
+      appEstimatedTime: [null],
       assignUserId: [null, [Validators.required]]
     })
   }
@@ -188,26 +209,65 @@ export class TaskCreateComponent {
       }
     })
 
-    let object: any = {
-      counter: this.taskCreateForm.value.counter,
-      partyName: this.taskCreateForm.value.partyName,
-      jobName: this.taskCreateForm.value.jobName,
-      size: this.taskCreateForm.value.size,
-      taskPriority: this.taskCreateForm.value.taskPriority,
-      operator: this.taskCreateForm.value.operator,
-      transportation: this.taskCreateForm.value.transportation,
-      Note: this.taskCreateForm.value.Note,
-      isHold: this.taskCreateForm.value.isHold,
-      isCancel: this.taskCreateForm.value.isCancel,
-      assignUserId: this.taskCreateForm.value.assignUserId,
-      category: selectedCategory.length > 0 ? selectedCategory : []
+    if (selectedCategory.length == 0) {
+      notification("error", "Please Select at least one Category", 1000);
+      return
     }
+
+    if (!this.selectedFile) {
+      notification("error", "Please Upload Initial Image.", 1000);
+      return
+    }
+
+    let object: FormData = new FormData();
+    object.append("counter", this.taskCreateForm.value.counter);
+    object.append("partyName", this.taskCreateForm.value.partyName);
+    object.append("jobName", this.taskCreateForm.value.jobName);
+    object.append("size", this.taskCreateForm.value.size);
+    object.append("taskPriority", this.taskCreateForm.value.taskPriority);
+    object.append("operator", this.taskCreateForm.value.operator);
+    object.append("transportation", this.taskCreateForm.value.transportation);
+    object.append("Note", this.taskCreateForm.value.Note);
+    object.append("appEstimatedDate", this.taskCreateForm.value.appEstimatedDate);
+    object.append("appEstimatedTime", this.taskCreateForm.value.appEstimatedTime);
+    object.append("isHold", this.taskCreateForm.value.isHold);
+    object.append("isCancel", this.taskCreateForm.value.isCancel);
+    object.append("assignUserId", this.taskCreateForm.value.assignUserId);
+    object.append("category", JSON.stringify(selectedCategory.length > 0 ? selectedCategory : []));
+    object.append("initialImage", this.selectedFile ? this.selectedFile : null);
 
     let createUpdateRole = await this.taskService.taskCreate(this.taskId, object);
     if (createUpdateRole.meta.code == 200) {
       notification('success', createUpdateRole.meta.message, 1000);
-      this.router.navigateByUrl('admin/task/list');
+      this.location.back();
       this.taskService.taskLists = []
     }
+  }
+
+  selectedFile: any; // Holds the selected file
+  imagePreview: string | null = null; // Holds the image preview URL
+
+  // Handles single file selection and generates an image preview
+  selectFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0]; // Store the selected file
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        if (e.target && e.target.result) {
+          this.imagePreview = e.target.result as string; // Set the image preview URL
+        }
+      };
+      reader.readAsDataURL(this.selectedFile); // Read the file as a Data URL
+    }
+
+    // Clear the input value to allow re-upload of the same file
+    input.value = '';
+  }
+
+  clearFile(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
   }
 }

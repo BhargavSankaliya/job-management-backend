@@ -21,6 +21,11 @@ export class TaskService {
     }
   }
 
+
+  async latestCounter() {
+    let date: any = await this.httpService.get("task/latest-taskNumber").toPromise();
+    return date.data;
+  }
   async saveDateInDB(data: any) {
     let date: any = await this.httpService.post("task/saveDate", data).toPromise();
     return date.data;
@@ -31,7 +36,7 @@ export class TaskService {
   }
 
   async taskCreate(id: any, bodyData: any) {
-    let taskCreate = await this.httpService.post(id ? 'task?id=' + id : 'task', bodyData).toPromise()
+    let taskCreate = await this.httpService.postform(id ? 'task?id=' + id : 'task', bodyData).toPromise()
     return taskCreate;
   }
   async getPartyName(search: any, value: any) {
@@ -46,6 +51,15 @@ export class TaskService {
 
   async taskViewDetailsById(id: string) {
     let taskDetails = await this.httpService.get('task/details-admin/' + id).toPromise();
+    return taskDetails.data;
+  }
+  async updateTaskStatus(taskId: string, status: string) {
+    let taskDetails = await this.httpService.put(`task/status/${taskId}/${status}`).toPromise();
+    return taskDetails.data;
+  }
+
+  async updateTaskStatusCompleted(taskId: string, status: string, object: any) {
+    let taskDetails = await this.httpService.putform(`task/status/${taskId}/${status}`, object).toPromise();
     return taskDetails.data;
   }
 

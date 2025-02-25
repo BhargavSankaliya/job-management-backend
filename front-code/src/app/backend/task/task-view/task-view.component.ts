@@ -4,6 +4,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe, Location, NgClass, NgFor, NgIf } from '@angular/common';
 import { TableDynamicComponent } from 'app/CommonComponent/table-dynamic/table-dynamic.component';
 import { environment } from 'environments/environment';
+import { getSessionData, StorageKey } from 'app/Providers/http-service/urls.service';
+import { notification } from 'assets/notifications.library';
+import { MatDialog } from '@angular/material/dialog';
+import { CompletedTaskComponent } from '../completed-task/completed-task.component';
 
 @Component({
   selector: 'app-task-view',
@@ -23,11 +27,13 @@ export class TaskViewComponent implements OnInit {
     { key: 'userName', name: 'User Name' },
     { key: 'totalTime', name: 'Total Time' },
   ]
-  workingUserTimeList: any[] = []
+  workingUserTimeList: any[] = [];
+  loginUserDetails: any;
 
-  constructor(public taskService: TaskService, public route: ActivatedRoute, public location: Location) {
+  constructor(public taskService: TaskService, public dialog: MatDialog, public route: ActivatedRoute, public location: Location) {
     let check: any = this.route.snapshot.paramMap.get('taskId');
-    this.taskId = check
+    this.taskId = check;
+    this.loginUserDetails = getSessionData(StorageKey.LOGINDETAILS)
   }
 
   ngOnInit(): void {
@@ -39,6 +45,12 @@ export class TaskViewComponent implements OnInit {
   async getTaskDetailsById() {
     let task: any = await this.taskService.taskViewDetailsById(this.taskId);
     this.taskDetails = task
+  }
+
+  async updateTaskStatusOfBilling() {
+    let task: any = await this.taskService.updateTaskStatus(this.taskId, "Billing");
+    notification("success", "Update task status to billing", 1000);
+    this.location.back();
   }
 
   async getTaskCommentsById() {
@@ -59,6 +71,23 @@ export class TaskViewComponent implements OnInit {
     document.body.appendChild(link);
     link.click();
     link.remove();
+  }
+
+  updateStatusOfCompleted() {
+    const dialogRef = this.dialog.open(CompletedTaskComponent, {
+      width: '600px',
+      height: 'auto',
+      data: {
+        taskId: this.taskId,
+        status: "Completed"
+      },
+      disableClose: true
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (!!result && result.success) {
+        this.location.back()
+      }
+    });
   }
 
 }
@@ -82,6 +111,8 @@ export interface TaskDetails {
   createdAt: string
   finalCounter: string
   updatedAt: string
+  billingPicture: string
+  initialImage: string
   deletedAt: string
   __v: number
   taskPriority: number

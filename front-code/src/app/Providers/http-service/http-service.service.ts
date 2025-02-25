@@ -30,7 +30,12 @@ export class HttpServiceService {
       'Content-Type': 'application/json',
       'Authorization': !!token ? `Bearer ${token}` : ''
     })
-
+  }
+  getHeadersForm() {
+    let token: any = getSessionData(StorageKey.TOKEN)
+    return new HttpHeaders({
+      'Authorization': !!token ? `Bearer ${token}` : ''
+    })
   }
   headers = new HttpHeaders({
     'Content-Type': 'application/json',
@@ -100,13 +105,14 @@ export class HttpServiceService {
     return this.http.post(
       `${this.commonService.rootData.rootUrl}${path}`,
       body,
+      { headers: this.getHeadersForm() }
     ).pipe(catchError(this.formatErrors));
   }
   putform(path: string, body: FormData): Observable<any> {
     return this.http.put(
       `${this.commonService.rootData.rootUrl}${path}`,
       body,
-      { headers: this.headersFormData }
+      { headers: this.getHeadersForm() }
     ).pipe(catchError(this.formatErrors));
   }
 

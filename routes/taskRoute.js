@@ -15,6 +15,8 @@ router.put("/assign/:taskId/:assignUser", taskController.assignUser);
 
 router.post("/list/all", taskController.listTask);
 
+router.get("/latest-taskNumber", taskController.latestTaskNumber);
+
 router.get("/mobile", taskController.mobileTaskList);
 
 router.get("/updateAll", taskController.updateAll);

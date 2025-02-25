@@ -11,6 +11,10 @@
         <form [formGroup]="taskCreateForm">
             <div class="row">
                 <div class="col-md-6 mb-3">
+                    <label>Job No.</label>
+                    <input type="text" readonly [value]="latestCounter" class="form-control">
+                </div>
+                <div class="col-md-6 mb-3">
                     <app-input-text label="Estimated Counter" placeholder="Enter Estimated Counter" type="text"
                         [control]="$any(taskCreateForm.get('counter'))" />
                 </div>
@@ -84,6 +88,16 @@
                         label="Assign To"></app-dropdown>
                 </div>
                 <div class="col-md-6 mb-3">
+                    <app-input-text label="Approx Estimated Date" placeholder="Enter Approx Estimated Date" type="date"
+                        [control]="$any(taskCreateForm.get('appEstimatedDate'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text label="Approx Estimated Time" placeholder="Enter Approx Estimated Time" type="time"
+                        [control]="$any(taskCreateForm.get('appEstimatedTime'))" />
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6 mb-3">
                     <label for="">&nbsp;</label>
                     <span>On Hold</span>
                     <input type="checkbox" [checked]="taskCreateForm.value.isHold" formControlName="isHold"
@@ -95,17 +109,39 @@
                     <input type="checkbox" [checked]="taskCreateForm.value.isCancel" formControlName="isCancel"
                         class="form-check-input p-0 mt-0 ms-2">
                 </div>
+                <div class="col-md-6 mb-3">
+                    <div class="col-12 mb-6">
+                        <label for="" class="form-label">Image</label>
+                        <br>
+                        <input type="file" accept="image/jpeg,image/png,image/gif" #fileInput
+                            (change)="selectFile($event)" hidden />
+                        <button type="button" class="btn btn-primary" (click)="fileInput.click()">Select Image</button>
+                        <div *ngIf="imagePreview" class="image-preview-container mt-4">
+                            <img [src]="imagePreview" height="100" width="100" alt="Selected Image" />
+                        </div>
+                        <button type="button" class="btn btn-outline-primary mt-4" *ngIf="selectedFile"
+                            (click)="clearFile()" [disabled]="!selectedFile">
+                            Remove Image
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class=" row mt-4">
                 <h4>Category Details</h4>
                 <div class="row">
-                    <div class="col-md-4 mb-3" *ngFor="let category of categoryList;let catIndex = index">
+                    <div class="col-md-4 mb-3" [ngClass]="category.type != 'text' ? 'd-block':'d-none'"
+                        *ngFor="let category of categoryList;let catIndex = index">
                         <span *ngIf="category.type == 'checkbox'">
                             <label for="">&nbsp;</label>
-                            <span>{{category.name}}</span>
                             <input [type]="category.type" (change)="updateCategoryCheck($event,catIndex)"
-                                [checked]="category.isChecked" class="form-check-input p-0 mt-0 ms-2">
+                                [checked]="category.isChecked" class="form-check-input p-0 mt-0 me-2">
+                            <span>{{category.name}}</span>
                         </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3" [ngClass]="category.type == 'text' ? 'd-block':'d-none'"
+                        *ngFor="let category of categoryList;let catIndex = index">
                         <span *ngIf="category.type == 'text'">
                             <label for="">{{category.name}}</label>
                             <input [type]="category.type" [(ngModel)]="category.value"

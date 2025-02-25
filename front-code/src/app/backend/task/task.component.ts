@@ -12,11 +12,14 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { getSessionData, StorageKey } from 'app/Providers/http-service/urls.service';
+import { NgIf } from '@angular/common';
+import { environment } from 'environments/environment';
 
 @Component({
   selector: 'app-task',
   standalone: true,
-  imports: [RouterLink, TableDynamicComponent, FormsModule, ReactiveFormsModule, SearchInputComponent, DropdownComponent],
+  imports: [RouterLink, TableDynamicComponent, NgIf, FormsModule, ReactiveFormsModule, SearchInputComponent, DropdownComponent],
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss'
 })
@@ -43,6 +46,8 @@ export class TaskComponent implements AfterViewInit {
   p = 1;
   search: any = '';
 
+  loginDetails: any
+
   dateObject = {
     startDate: moment().startOf('week').format("yyyy-MM-DD"),
     endDate: moment().endOf('week').format("yyyy-MM-DD")
@@ -53,7 +58,10 @@ export class TaskComponent implements AfterViewInit {
       startDate: moment().startOf('week').format("yyyy-MM-DD"),
       endDate: moment().endOf('week').format("yyyy-MM-DD")
     }
-    this.getDate()
+    this.getDate();
+    this.loginDetails = getSessionData(StorageKey.LOGINDETAILS);
+    console.log(this.loginDetails);
+
   }
 
   async getDate() {
@@ -87,7 +95,7 @@ export class TaskComponent implements AfterViewInit {
   }
 
   async getTaskList(force: boolean) {
-    
+
     let object = {
       startDate: moment(this.dateObject.startDate).startOf('day').toDate(),
       endDate: moment(this.dateObject.endDate).endOf('day').toDate(),
@@ -97,7 +105,7 @@ export class TaskComponent implements AfterViewInit {
     if (list.length > 0) {
 
 
-      this.allTaskList = list.map((x, i) => { return { ...x, date: moment(x.createdAt).format("DD/MM/yyyy"), srNo: i + 1, action: { edit: true, view: true }, process: this.getCategoryString(x.category), taskPriority: x.taskPriority == 1 ? 'Low' : x.taskPriority == 2 ? 'Medium' : 'High' } })
+      this.allTaskList = list.map((x, i) => { return { ...x, date: moment(x.createdAt).format("DD/MM/yyyy"), srNo: i + 1, action: { edit: true, view: true, download: !!x.completedPicture ? true : false }, process: this.getCategoryString(x.category), taskPriority: x.taskPriority == 1 ? 'Low' : x.taskPriority == 2 ? 'Medium' : 'High' } })
       this.taskList = this.allTaskList;
 
       this.p = 1;
@@ -144,39 +152,51 @@ export class TaskComponent implements AfterViewInit {
       { header: 'Priority', key: 'taskPriority', width: 20 },
       { header: 'Status', key: 'taskStatus', width: 20 },
       { header: 'Assign User', key: 'userName', width: 30 },
+      { header: 'Categories', key: 'categories', width: 60 },
       { header: 'Created At', key: 'createdAt', width: 20 },
     ];
 
     // Extract unique category names to use as dynamic headers
-    const categoryNames = Array.from(
-      new Set(
-        this.taskList.flatMap(row => row.category?.map(cat => cat.name) || [])
-      )
-    );
+    // const categoryNames = Array.from(
+    //   new Set(
+    //     this.taskList.flatMap(row => row.category?.map(cat => cat.name) || [])
+    //   )
+    // );
 
     // Create headers for categories
-    const categoryHeaders = categoryNames.map(name => ({
-      header: name,
-      key: name,
-      width: 20,
-    }));
+    // const categoryHeaders = categoryNames.map(name => ({
+    //   header: name,
+    //   key: name,
+    //   width: 20,
+    // }));
 
     // Combine all headers
-    const headers = [...baseHeaders, ...categoryHeaders];
+    const headers = [...baseHeaders];
 
     // Map data dynamically based on headers
     const mappedData = this.taskList.map((row) => {
       const formattedRow: any = {};
+      let taskName = "";
+
+      if (row.category && row.category.length > 0) {
+        row.category.map((a, i) => {
+          if (i == 0) {
+            taskName = a.name;
+          }
+          else {
+            taskName = taskName + ", " + a.name;
+          }
+        })
+      }
 
       headers.forEach((col) => {
         if (col.key === 'createdAt') {
           // Format the createdAt date
           formattedRow[col.header] = moment(row[col.key]).format("DD/MM/yyyy");
-        } else if (categoryNames.includes(col.key)) {
-          // Match the category name and assign its value
-          const category = row.category?.find(cat => cat.name === col.key);
-          formattedRow[col.header] = category?.value || ''; // Set empty string if not found
-        } else {
+        } else if (col.key === 'categories') {
+          formattedRow[col.header] = taskName;
+        }
+        else {
           // Map other keys
           formattedRow[col.header] = row[col.key] || '';
         }
@@ -199,5 +219,22 @@ export class TaskComponent implements AfterViewInit {
     saveAs(blob, 'DynamicExcel.xlsx');
   }
 
+  environmentBaseUrl = environment.apiUrl;
+
+  download(e: any) {
+    let taskDetails = this.taskList.find((x) => x._id == e);
+
+    this.downloadMyFile(this.environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture, taskDetails.completedPicture)
+  }
+
+  downloadMyFile(url: any, imageName: any) {
+    const link = document.createElement('a');
+    link.setAttribute('target', '_blank');
+    link.setAttribute('href', url);
+    link.setAttribute('download', imageName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
 
 }
