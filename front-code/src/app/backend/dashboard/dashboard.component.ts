@@ -165,6 +165,9 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     }
     this.taskList = count.taskListByUserId;
     this.allTaskList = this.taskList;
+
+    setSessionData(StorageKey.listNumber, String(this.taskList.length));
+
     this.saveDate({
       startDate: object.startDate,
       endDate: object.endDate
@@ -201,6 +204,7 @@ export class DashboardComponent implements AfterViewInit, OnInit {
     }
 
     this.taskList = tempTaskAllList
+    setSessionData(StorageKey.listNumber, String(this.taskList.length));
 
   }
 

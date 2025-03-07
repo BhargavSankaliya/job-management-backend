@@ -16,13 +16,13 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
-    "target": "ES2020",
-    "module": "ES2020",
+    "target": "ES2015",
+    "module": "ES2015",
     "useDefineForClassFields": false,
     "lib": [
-      "ES2020",
+      "ES2015",
       "dom"
     ]
   },
@@ -30,6 +30,6 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": false
   }
 }

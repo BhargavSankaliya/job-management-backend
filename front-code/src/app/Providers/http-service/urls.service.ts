@@ -27,13 +27,17 @@ export class UrlsService {
 
 }
 
-export function setSessionData(key: StorageKey, value: string) {
+export function setSessionData(key: StorageKey | StorageKeyForTask | StorageKeyForDashboard, value: string) {
   localStorage.setItem(key, value);
 }
 
-export function getSessionData(key: StorageKey) {
+export function getSessionData(key: StorageKey | StorageKeyForTask | StorageKeyForDashboard) {
   let data: any = localStorage.getItem(key);
   return JSON.parse(data);
+}
+export function getSessionDataForTask(key: StorageKey | StorageKeyForTask | StorageKeyForDashboard) {
+  let data: any = localStorage.getItem(key);
+  return data;
 }
 
 export function removeSessionData(key: StorageKey) {
@@ -45,5 +49,22 @@ export enum StorageKey {
   LOGINDETAILS = 'LOGINDETAILS',
   TOKEN = 'TOKEN',
   STARTDATE = 'STARTDATE',
-  ENDDATE = 'ENDDATE'
+  ENDDATE = 'ENDDATE',
+  listNumber = 'listNumber',
+}
+export enum StorageKeyForTask {
+  jobNo = 'jobNo',
+  counter = 'counter',
+  partyName = 'partyName',
+  jobName = 'jobName',
+  operator = 'operator',
+  size = 'size',
+  taskPriority = 'taskPriority',
+}
+export enum StorageKeyForDashboard {
+  LOGINDATA = 'LOGINDATA',
+  LOGINDETAILS = 'LOGINDETAILS',
+  TOKEN = 'TOKEN',
+  STARTDATE = 'STARTDATE',
+  ENDDATE = 'ENDDATE',
 }

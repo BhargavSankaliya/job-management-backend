@@ -1,0 +1,53 @@
+<div class="card">
+    <div class="card-header">
+        <div class="d-md-flex align-items-center justify-content-between">
+            <h5 class="mb-0">{{isEdit ? 'Update' : 'Create'}} Client</h5>
+            <div>
+                <button class="btn btn-primary" (click)="location.back()">Back to list</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body mb-3">
+        <form [formGroup]="clientCreateForm">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <app-input-text [invalid]="invalid" label="Full Name" placeholder="Enter Full Name" type="text"
+                        [control]="$any(clientCreateForm.get('name'))" />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <app-input-text [invalid]="invalid" label="Email" placeholder="Enter First Name" type="email"
+                        [control]="$any(clientCreateForm.get('email'))" />
+                </div>
+                <div class="col-md-2 mb-3">
+                    <app-input-text [invalid]="invalid" label="Phone Number Country Code"
+                        placeholder="Enter Phone Number Country Code" type="text"
+                        [control]="$any(clientCreateForm.get('phoneNumberCountryCode'))" />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <app-input-text [invalid]="invalid" label="Phone Number" placeholder="Enter Phone Number"
+                        type="text" [control]="$any(clientCreateForm.get('phoneNumber'))" />
+                </div>
+                <div class="col-md-12 my-4">
+                    <input type="checkbox" [checked]="clientCreateForm.value.isSame" formControlName="isSame"
+                        class="form-check-input p-0 mt-0 me-2">
+                    <span>Is Same For Whatsapp Number?</span>
+                </div>
+
+                <div class="col-md-2 mb-3">
+                    <app-input-text [invalid]="invalid" label="Whastapp Country Code"
+                        placeholder="Enter Whastapp Country Code" type="text" [readonly]="clientCreateForm.value.isSame"
+                        [control]="$any(clientCreateForm.get('whatsappNumberCountryCode'))" />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <app-input-text [invalid]="invalid" label="Whastapp Number" placeholder="Enter Whastapp Number"
+                        [readonly]="clientCreateForm.value.isSame" type="text"
+                        [control]="$any(clientCreateForm.get('whatsappNumber'))" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-end">
+        <button class="btn btn-outline-danger me-2" (click)="location.back()">Cancel</button>
+        <button class="btn btn-primary" (click)="createClient()">{{isEdit ? 'Update' : 'Create'}}</button>
+    </div>
+</div>

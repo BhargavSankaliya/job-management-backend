@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, RouterLink } from '@angular/router';
 import { SearchInputComponent } from 'app/CommonComponent/search-input/search-input.component';
@@ -6,6 +6,7 @@ import { TableDynamicComponent } from 'app/CommonComponent/table-dynamic/table-d
 import { CategoryService } from './category.service';
 import { DeleteData, DeleteModalComponent } from 'app/backend/common-modal/delete-modal/delete-modal.component';
 import { notification } from 'assets/notifications.library';
+import { setSessionData, StorageKey } from 'app/Providers/http-service/urls.service';
 
 @Component({
   selector: 'app-category',
@@ -31,8 +32,20 @@ export class CategoryComponent {
     this.getCategoryList(false);
   }
 
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.altKey && event.key.toLowerCase() === 'c') {
+      this.router.navigateByUrl("admin/task/category/create")
+    }
+    if (event.altKey && event.key.toLowerCase() === 'r') {
+      this.getCategoryList(true);
+    }
+  }
+
   searchFilter(search: any) {
     this.categoryList = this.allCategoryList.filter((x) => JSON.stringify(x).toLocaleLowerCase().includes(search.toLocaleLowerCase()));
+    setSessionData(StorageKey.listNumber, String(this.categoryList.length));
+
   }
 
   async getCategoryList(force: boolean) {
@@ -45,6 +58,7 @@ export class CategoryComponent {
       this.categoryList = [];
       this.allCategoryList = [];
     }
+    setSessionData(StorageKey.listNumber, String(this.categoryList.length));
   }
 
   edit(event: any) {

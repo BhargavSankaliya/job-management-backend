@@ -106,7 +106,7 @@
                     <div class="col-md-4 mb-1"
                         *ngIf="taskDetails.completedPicture && taskDetails.completedPicture.includes('pdf')">
                         <div class="mb-2">
-                            <h6 class="mb-1">Completed Images :</h6>
+                            <h6 class="mb-1">Completed PDF :</h6>
                             <a>
                                 <p>📄 {{ taskDetails.completedPicture }}</p>
                                 <a (click)="downloadMyFile(environmentBaseUrl + 'uploads/completedPicture/' + taskDetails.completedPicture,taskDetails.completedPicture)"
@@ -114,9 +114,18 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-1" *ngIf="taskDetails.billingPicture">
+                    <div class="col-md-4 mb-1"
+                        *ngIf="taskDetails.billingPicture && taskDetails.billingPicture.includes('pdf')">
                         <div class="mb-2">
-                            <h6 class="mb-1">Completed Images :</h6>
+                            <h6 class="mb-1">Billing PDF :</h6>
+                            <a (click)="downloadMyFile(environmentBaseUrl + 'uploads/billingPicture/' + taskDetails.billingPicture,taskDetails.billingPicture)"
+                                target="_blank" class="btn btn-link border">View PDF</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-1"
+                        *ngIf="taskDetails.billingPicture && !taskDetails.billingPicture.includes('pdf')">
+                        <div class="mb-2">
+                            <h6 class="mb-1">Billing Images :</h6>
                             <a
                                 (click)="downloadMyFile(environmentBaseUrl + 'uploads/billingPicture/' + taskDetails.billingPicture,taskDetails.billingPicture)">
                                 <img [src]="environmentBaseUrl + 'uploads/billingPicture/' + taskDetails.billingPicture"

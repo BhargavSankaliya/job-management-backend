@@ -37,6 +37,8 @@ router.post('/saveDate', taskController.dateSaveAndUpdate);
 
 router.get('/saveDate', taskController.dateGetUserIdWise);
 
+router.get('/updateIdInPartyname', taskController.updateIdInPartyName);
+
 
 
 module.exports = router

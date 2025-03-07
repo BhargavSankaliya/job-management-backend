@@ -14,6 +14,8 @@ import { TaskViewComponent } from './backend/task/task-view/task-view.component'
 import { CategoryComponent } from './backend/task/category/category.component';
 import { CategoryCreateComponent } from './backend/task/category/category-create/category-create.component';
 import { ProfileComponent } from './backend/profile/profile.component';
+import { ClientMasterComponent } from './backend/client-master/client-master.component';
+import { ClientCreateComponent } from './backend/client-master/client-create/client-create.component';
 
 export const routes: Routes = [
     // auth url
@@ -39,6 +41,10 @@ export const routes: Routes = [
             { path: 'users', component: UsersComponent },
             { path: 'users/create', component: UserCreateComponent },
             { path: 'users/update/:userId', component: UserCreateComponent },
+
+            { path: 'clients', component: ClientMasterComponent },
+            { path: 'clients/create', component: ClientCreateComponent },
+            { path: 'clients/update/:clientId', component: ClientCreateComponent },
 
             { path: 'task/list', component: TaskComponent },
             { path: 'task/list/create', component: TaskCreateComponent },

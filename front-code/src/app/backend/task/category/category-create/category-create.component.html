@@ -11,15 +11,15 @@
         <form [formGroup]="categoryCreateForm">
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Name" placeholder="Enter Name" type="text"
+                    <app-input-text label="Name" placeholder="Enter Name" type="text" [invalid]="invalid"
                         [control]="$any(categoryCreateForm.get('name'))" />
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Type" placeholder="Enter Type" type="text"
+                    <app-input-text label="Type" placeholder="Enter Type" type="text" [invalid]="invalid"
                         [control]="$any(categoryCreateForm.get('type'))" />
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Order" placeholder="Enter Order" type="number"
+                    <app-input-text label="Order" placeholder="Enter Order" type="number" [invalid]="invalid"
                         [control]="$any(categoryCreateForm.get('order'))" />
                 </div>
             </div>

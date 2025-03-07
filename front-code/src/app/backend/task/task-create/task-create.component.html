@@ -16,17 +16,23 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <app-input-text label="Estimated Counter" placeholder="Enter Estimated Counter" type="text"
-                        [control]="$any(taskCreateForm.get('counter'))" />
+                        [invalid]="invalid" [control]="$any(taskCreateForm.get('counter'))" />
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-dropdown [control]="$any(taskCreateForm.get('taskPriority'))" key="name" value="value"
-                        [dropdownData]="priorityList" [clearable]="false" placeholder="Select Priority"
+                    <app-dropdown [invalid]="invalid" [control]="$any(taskCreateForm.get('taskPriority'))" key="name"
+                        value="value" [dropdownData]="priorityList" [clearable]="false" placeholder="Select Priority"
                         [isMultiple]="false" label="Task Priority"></app-dropdown>
                 </div>
                 <div class="col-md-6 mb-3">
                     <!-- <app-input-text label="Party Name" placeholder="Enter Party Name" type="text"
-                        [control]="$any(taskCreateForm.get('partyName'))" /> -->
-                    <label for="">Party Name</label>
+                        [invalid]="invalid" [control]="$any(taskCreateForm.get('partyName'))" /> -->
+
+                    <app-dropdown [invalid]="invalid" [control]="$any(taskCreateForm.get('partyName'))" key="name"
+                        value="_id" [dropdownData]="partyNameList" [clearable]="true" placeholder="Select Party Name"
+                        [isMultiple]="false" label="Party Name" [searchable]="true"></app-dropdown>
+
+
+                    <!-- <label for="">Party Name</label>
                     <input type="text" class="form-control" matInput
                         [formControl]="$any(taskCreateForm.get('partyName'))" [matAutocomplete]="auto"
                         placeholder="Enter Party Name">
@@ -34,7 +40,7 @@
                         <mat-option *ngFor="let option of partyNameList" [value]="option.partyName">
                             {{ option.partyName }}
                         </mat-option>
-                    </mat-autocomplete>
+                    </mat-autocomplete> -->
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="">Job Name</label>
@@ -45,6 +51,12 @@
                             {{ option.jobName }}
                         </mat-option>
                     </mat-autocomplete>
+                    <div class="text-danger"
+                        *ngIf="(taskCreateForm.controls['jobName'].errors && taskCreateForm.controls['jobName'].touched) || invalid">
+                        <div *ngIf="taskCreateForm.controls['jobName'].errors['required']">
+                            Job Name is required.
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="">Size</label>
@@ -79,21 +91,21 @@
                     </mat-autocomplete>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-input-text label="Note" placeholder="Enter Note" type="text"
+                    <app-input-text label="Note" placeholder="Enter Note" type="text" [invalid]="invalid"
                         [control]="$any(taskCreateForm.get('Note'))" />
                 </div>
                 <div class="col-md-6 mb-3">
-                    <app-dropdown [control]="$any(taskCreateForm.get('assignUserId'))" key="firstName" value="_id"
-                        [dropdownData]="userList" [clearable]="false" placeholder="Select User" [isMultiple]="false"
-                        label="Assign To"></app-dropdown>
+                    <app-dropdown [invalid]="invalid" [control]="$any(taskCreateForm.get('assignUserId'))"
+                        key="firstName" value="_id" [dropdownData]="userList" [clearable]="false"
+                        placeholder="Select User" [isMultiple]="false" label="Assign To"></app-dropdown>
                 </div>
                 <div class="col-md-6 mb-3">
                     <app-input-text label="Approx Estimated Date" placeholder="Enter Approx Estimated Date" type="date"
-                        [control]="$any(taskCreateForm.get('appEstimatedDate'))" />
+                        [invalid]="invalid" [control]="$any(taskCreateForm.get('appEstimatedDate'))" />
                 </div>
                 <div class="col-md-6 mb-3">
                     <app-input-text label="Approx Estimated Time" placeholder="Enter Approx Estimated Time" type="time"
-                        [control]="$any(taskCreateForm.get('appEstimatedTime'))" />
+                        [invalid]="invalid" [control]="$any(taskCreateForm.get('appEstimatedTime'))" />
                 </div>
             </div>
             <div class="row mt-2">

@@ -8,6 +8,7 @@ const userRoute = require("./routes/userRoute");
 const roleRoute = require("./routes/roleRoute");
 const menuRoute = require("./routes/menuRoute");
 const taskRoute = require("./routes/taskRoute");
+const clientMasterRoute = require("./routes/clientMasterRoute");
 const taskCategoryRoute = require("./routes/taskCategoryRoute");
 const { errorHandler } = require("./middlewares/error");
 const verifyToken = require("./middlewares/verifyToken");
@@ -67,6 +68,7 @@ app.use("/api/menu", verifyToken, menuRoute);
 app.use("/api/user", cpUpload, userRoute);
 app.use("/api/task", verifyToken, cpUpload, taskRoute);
 app.use("/api/task-category", verifyToken, taskCategoryRoute);
+app.use("/api/client", verifyToken, clientMasterRoute);
 
 // Error handling
 app.use((err, req, res, next) => {

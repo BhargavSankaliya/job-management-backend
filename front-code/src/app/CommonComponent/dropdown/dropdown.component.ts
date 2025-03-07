@@ -18,6 +18,7 @@ export class DropdownComponent implements OnInit {
   @Input() isMultiple: boolean = false;
   @Input() isCloseOnSelect: boolean = true;
   @Input() clearable: boolean = false;
+  @Input() invalid: boolean = false;
   @Input() searchable: boolean = false;
 
   @Input() dropdownData: any[] = [];

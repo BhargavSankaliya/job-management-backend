@@ -4,6 +4,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { PaginationLimitComponent } from '../pagination-limit/pagination-limit.component';
 import { ActivatedRoute, Router } from '@angular/router';
+import { getSessionData, StorageKey } from 'app/Providers/http-service/urls.service';
 
 @Component({
   selector: 'app-table-dynamic',
@@ -71,13 +72,16 @@ export class TableDynamicComponent implements OnInit, OnChanges, DoCheck {
 
   ngDoCheck(): void {
     this.allTableData = this.tableData;
-    if (this.tableData.length <= this.pageSize) {
+
+    const tabledataLength = getSessionData(StorageKey.listNumber);
+    if (tabledataLength <= (this.pageSize * this.currentPage)) {
       this.currentPage = 1;
       // this.pageChange()
     }
 
     this.route.queryParams.subscribe(params => {
-      if (params['page']) {
+      const pagedataLength = params['page'] ? (JSON.parse(params['page']) - 1) * this.pageSize : this.pageSize;
+      if (params['page'] && tabledataLength >= this.pageSize && tabledataLength > pagedataLength) {
         this.currentPage = +params['page']; // Convert to number
       }
     });

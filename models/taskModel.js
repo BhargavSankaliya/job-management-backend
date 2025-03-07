@@ -35,10 +35,9 @@ const taskSchema = new mongoose.Schema(
             default: 10
         },
         partyName: {
-            type: String,
-            required: [true, 'Party Name is requied.'],
-            trim: true,
-            default: ''
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Client", // Ensure it's referencing the Client model
+            required: [true, "Party Name is required."]
         },
         jobName: {
             type: String,

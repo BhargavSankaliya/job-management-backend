@@ -1,10 +1,10 @@
 <label *ngIf="!!label" class="form-label">{{label}} <span
         *ngIf="control.errors && (control.errors['required'] || control.errors['maxlength'] || control.errors['min'] || control.errors['whitespace'] || control.errors['minlength'])"
         class="color-red text-danger">*</span></label>
-<input class="form-control" [class]="class" [min]="minDate" (input)="changes()" [formControl]="control" trim [type]="type" [placeholder]="placeholder" [required]="required"
-    [readonly]="readonly">
+<input class="form-control" [class]="class" [min]="minDate" (input)="changes()" [formControl]="control" trim
+    [type]="type" [placeholder]="placeholder" [required]="required" [readonly]="readonly">
 
-<ng-container *ngIf="displayErrors()">
+<ng-container *ngIf="displayErrors() || invalid">
     <div *ngIf="control.errors" class="text-danger">
 
         <div *ngIf="control.errors['required'] || control.errors['whitespace']">This value is required.</div>

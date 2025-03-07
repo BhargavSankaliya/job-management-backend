@@ -1,5 +1,5 @@
 import { Location, NgClass, NgFor, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { InputTextComponent } from 'app/CommonComponent/input-text/input-text.component';
@@ -13,6 +13,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { environment } from 'environments/environment';
 import moment from 'moment';
+import { ClientMasterService } from 'app/backend/client-master/client-master.service';
 
 @Component({
   selector: 'app-task-create',
@@ -38,14 +39,15 @@ export class TaskCreateComponent {
   operatorList: any[] = [];
   transportationList: any[] = [];
   latestCounter: Number = 0;
+  invalid: boolean = false;
 
-  constructor(public location: Location, public userService: UserService, public router: Router, public categoryService: CategoryService, public taskService: TaskService, public route: ActivatedRoute, public formBuilder: FormBuilder) { }
+  constructor(public location: Location, public userService: UserService, public clientMasterService: ClientMasterService, public router: Router, public categoryService: CategoryService, public taskService: TaskService, public route: ActivatedRoute, public formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.defaultForm();
     this.getCategoryList(false);
     this.getUserList(false);
-
+    this.getPartyNameList();
     let check: any = this.route.snapshot.paramMap.get('taskId');
     if (!!check) {
       this.isEdit = true;
@@ -57,20 +59,34 @@ export class TaskCreateComponent {
     }
   }
 
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.altKey && event.key.toLowerCase() === 'b') {
+      this.location.back();
+    }
+    if (event.altKey && event.key.toLowerCase() === 's') {
+      this.createTask();
+    }
+  }
+
   async fetchCounter() {
     let counter = await this.taskService.latestCounter();
     this.latestCounter = counter;
   }
 
+  async getPartyNameList() {
+    this.partyNameList = await this.clientMasterService.getClientActiveList();
+  }
+
   ngAfterViewInit(): void {
-    this.taskCreateForm.controls['partyName'].valueChanges.pipe(
-      debounceTime(1000),
-      distinctUntilChanged(),
-      switchMap(value => value ? this.taskService.getPartyName('partyName', value) : [])
-    ).subscribe(data => {
-      let list: any[] = data;
-      this.partyNameList = list;
-    });
+    // this.taskCreateForm.controls['partyName'].valueChanges.pipe(
+    //   debounceTime(1000),
+    //   distinctUntilChanged(),
+    //   switchMap(value => value ? this.taskService.getPartyName('partyName', value) : [])
+    // ).subscribe(data => {
+    //   let list: any[] = data;
+    //   this.partyNameList = list;
+    // });
 
     this.taskCreateForm.controls['jobName'].valueChanges.pipe(
       debounceTime(1000),
@@ -170,7 +186,7 @@ export class TaskCreateComponent {
     this.taskCreateForm = this.formBuilder.group({
       counter: ['', [Validators.required, noWhitespaceValidator]],
       taskPriority: [2, [Validators.required]],
-      partyName: ['', [Validators.required, noWhitespaceValidator]],
+      partyName: [null, [Validators.required, noWhitespaceValidator]],
       jobName: ['', [Validators.required, noWhitespaceValidator]],
       size: [''],
       operator: [''],
@@ -195,6 +211,7 @@ export class TaskCreateComponent {
 
   async createTask() {
     if (this.taskCreateForm.invalid) {
+      this.invalid = true;
       notification('error', 'Please Fill Task form properly', 1000);
       return
     }

@@ -10,6 +10,7 @@ const UserModel = require("../models/userModel.js");
 const SearchDateHistoryModel = require("../models/searchDateHistoryModel.js");
 const moment = require("moment");
 const JobCounter = require("../models/jobCounterModel.js");
+const ClientMasterModel = require("../models/clientMasterModel.js");
 const taskController = {};
 
 taskController.createUpdateTask = async (req, res, next) => {
@@ -175,9 +176,19 @@ taskController.listTask = async (req, res, next) => {
           as: "categoryDetails"
         }
       },
-
+      {
+        $lookup: {
+          from: "clientmasters",
+          localField: "partyName",
+          foreignField: "_id",
+          as: "clientDetails"
+        }
+      },
       {
         $addFields: {
+          partyName: {
+            $arrayElemAt: ["$clientDetails.name", 0]
+          },
           category: {
             $map: {
               input: "$category",
@@ -328,7 +339,18 @@ taskController.mobileTaskList = async (req, res, next) => {
         }
       },
       {
+        $lookup: {
+          from: "clientmasters",
+          localField: "partyName",
+          foreignField: "_id",
+          as: "clientDetails"
+        }
+      },
+      {
         $addFields: {
+          partyName: {
+            $arrayElemAt: ["$clientDetails.name", 0]
+          },
           category: {
             $map: {
               input: "$category",
@@ -465,7 +487,18 @@ taskController.taskById = async (req, res, next) => {
         }
       },
       {
+        $lookup: {
+          from: "clientmasters",
+          localField: "partyName",
+          foreignField: "_id",
+          as: "clientDetails"
+        }
+      },
+      {
         $addFields: {
+          partyName: {
+            $arrayElemAt: ["$clientDetails.name", 0]
+          },
           category: {
             $map: {
               input: "$category",
@@ -575,7 +608,18 @@ taskController.taskDetailsByIdForAdmin = async (req, res, next) => {
         }
       },
       {
+        $lookup: {
+          from: "clientmasters",
+          localField: "partyName",
+          foreignField: "_id",
+          as: "clientDetails"
+        }
+      },
+      {
         $addFields: {
+          partyName: {
+            $arrayElemAt: ["$clientDetails.name", 0]
+          },
           category: {
             $map: {
               input: "$category",
@@ -925,9 +969,19 @@ taskController.taskCountForDashboard = async (req, res, next) => {
           as: "categoryDetails"
         }
       },
-
+      {
+        $lookup: {
+          from: "clientmasters",
+          localField: "partyName",
+          foreignField: "_id",
+          as: "clientDetails"
+        }
+      },
       {
         $addFields: {
+          partyName: {
+            $arrayElemAt: ["$clientDetails.name", 0]
+          },
           category: {
             $map: {
               input: "$category",
@@ -1118,6 +1172,37 @@ taskController.searchParameter = async (req, res, next) => {
   }
 };
 
+taskController.fetchPartyName = async (req, res, next) => {
+  try {
+
+    let query = [
+      {
+        $project: {
+          partyName: 1,
+          _id: 0,
+        },
+      },
+      {
+        $group: {
+          _id: "$partyName"
+        }
+      },
+      {
+        $project: {
+          partyName: "$_id",
+          _id: 0,
+        },
+      },
+    ];
+
+    const searchList = await TaskModel.aggregate(query);
+
+    return searchList;
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+
 taskController.dateSaveAndUpdate = async (req, res, next) => {
   try {
 
@@ -1172,6 +1257,24 @@ taskController.dateGetUserIdWise = async (req, res, next) => {
     else {
       return createResponse(null, 200, "Date retrieved successfully.", res);
     }
+
+  } catch (error) {
+    errorHandler(error, req, res);
+  }
+};
+taskController.updateIdInPartyName = async (req, res, next) => {
+  try {
+
+    const clientDetails = await ClientMasterModel.aggregate([{ $match: { isDeleted: false } }]);
+
+    for (const clientData of clientDetails) {
+      await TaskModel.updateMany(
+        { $expr: { $eq: [{ $toString: "$partyName" }, clientData.name] } }, // Convert ObjectId to string for comparison
+        { $set: { partyName: clientData._id } } // Update partyName to ObjectId
+      );
+    }
+
+    createResponse(null, 200, "Date retrieved successfully.", res);
 
   } catch (error) {
     errorHandler(error, req, res);

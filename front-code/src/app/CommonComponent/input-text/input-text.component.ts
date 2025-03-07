@@ -20,6 +20,7 @@ export class InputTextComponent implements OnInit {
   @Input() required: boolean = false;
   @Input() readonly: boolean = false;
   @Input() minDate: any = null;
+  @Input() invalid: boolean = false;
 
 
   @Output() changeInput = new EventEmitter<any>();

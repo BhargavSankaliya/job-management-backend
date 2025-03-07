@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CategoryService } from '../category.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -17,6 +17,7 @@ import { Location } from '@angular/common';
 export class CategoryCreateComponent {
   categoryCreateForm: FormGroup;
   isEdit: boolean = false;
+  invalid: boolean = false;
   categoryId: any;
   menuLists: any[] = [];
 
@@ -32,6 +33,16 @@ export class CategoryCreateComponent {
       this.getCategoryDetailsById()
     }
 
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.altKey && event.key.toLowerCase() === 'b') {
+      this.location.back();
+    }
+    if (event.altKey && event.key.toLowerCase() === 's') {
+      this.createCategory();
+    }
   }
 
   async getCategoryDetailsById() {
@@ -53,6 +64,7 @@ export class CategoryCreateComponent {
 
   async createCategory() {
     if (this.categoryCreateForm.invalid) {
+      this.invalid = true;
       notification('error', 'Please Fill Category form properly', 1000);
       return
     }

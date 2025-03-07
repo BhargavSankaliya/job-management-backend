@@ -9,10 +9,11 @@
 </div>
 <div class="card">
     <div class="card-header">
-        <div class="d-md-flex align-item-center justify-content-between">
+        <div class="d-md-flex align-item-center justify-content-between mb-3">
             <div class="input-search mb-3">
-                <input class="form-control" [(ngModel)]="search" (input)="searchFilter()" type="search"
-                    [placeholder]="'Search...'">
+                <!-- <input class="form-control" [(ngModel)]="search" (input)="searchFilter()" type="search"
+                    [placeholder]="'Search...'"> -->
+                &nbsp;
             </div>
             <div class="row">
                 <div class="col-md-4 col-12 mb-3">
@@ -34,6 +35,41 @@
                     </button>
                 </div>
             </div>
+        </div>
+        <div class="d-flex align-items-center gap-10">
+            <div class="input-search">
+                <label for="">Job No.</label>
+                <input class="form-control" [(ngModel)]="jobNo" (input)="searchFilter()" type="search"
+                    [placeholder]="'Search Job No...'">
+            </div>
+            <div class="input-search">
+                <label for="">Estimated Counter</label>
+                <input class="form-control" [(ngModel)]="counter" (input)="searchFilter()" type="search"
+                    [placeholder]="'Search Estimated Counter...'">
+            </div>
+            <div class="input-search">
+                <label for="">Party Name</label>
+                <input class="form-control" [(ngModel)]="partyName" (input)="searchFilter()" type="search"
+                    [placeholder]="'Search Estimated Counter...'">
+            </div>
+            <div class="input-search">
+                <label for="">Job Name</label>
+                <input class="form-control" [(ngModel)]="jobName" (input)="searchFilter()" type="search"
+                    [placeholder]="'Search Estimated Counter...'">
+            </div>
+            <div class="input-search">
+                <label for="">Operator</label>
+                <input class="form-control" [(ngModel)]="operator" (input)="searchFilter()" type="search"
+                    [placeholder]="'Search Operator...'">
+            </div>
+            <div class="input-search">
+                <label for="">Size</label>
+                <input class="form-control" [(ngModel)]="size" (input)="searchFilter()" type="search"
+                    [placeholder]="'Search Size...'">
+            </div>
+            <app-dropdown [control]="$any(dashboardForm.get('priority'))" key="name" value="value"
+                [dropdownData]="priorityList" (dropdownChanged)="searchFilter()" [clearable]="true" placeholder="Select Priority" [isMultiple]="false"
+                label="Select Priority"></app-dropdown>
         </div>
     </div>
     <div class="card-body">

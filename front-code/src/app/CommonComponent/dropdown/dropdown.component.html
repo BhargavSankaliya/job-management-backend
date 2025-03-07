@@ -14,7 +14,7 @@
     </ng-template>
 </ng-select>
 
-<ng-container *ngIf="displayErrors()">
+<ng-container *ngIf="displayErrors() || invalid">
     <div *ngIf="control.errors" class="text-danger">
 
         <div *ngIf="control.errors['required']">This value is required</div>

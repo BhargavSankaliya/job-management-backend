@@ -6,6 +6,7 @@ import { Router, RouterLink } from '@angular/router';
 import { DeleteData, DeleteModalComponent } from '../common-modal/delete-modal/delete-modal.component';
 import { MatDialog } from '@angular/material/dialog';
 import { notification } from 'assets/notifications.library';
+import { setSessionData, StorageKey } from 'app/Providers/http-service/urls.service';
 
 @Component({
   selector: 'app-users',
@@ -35,6 +36,7 @@ export class UsersComponent {
 
   searchFilter(search: any) {
     this.userList = this.allUserList.filter((x) => JSON.stringify(x).toLocaleLowerCase().includes(search.toLocaleLowerCase()));
+    setSessionData(StorageKey.listNumber, String(this.userList.length));
   }
 
   async getUserList(force: boolean) {
@@ -47,6 +49,8 @@ export class UsersComponent {
       this.userList = [];
       this.allUserList = [];
     }
+
+    setSessionData(StorageKey.listNumber, String(this.userList.length));
   }
 
   edit(event: any) {
